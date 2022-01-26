@@ -18,6 +18,7 @@ retro_emulator_file_t *ACTIVE_FILE = NULL;
 #include "sg1000_roms.c"
 #include "pce_roms.c"
 #include "gw_roms.c"
+#include "mame_roms.c"
 
 const rom_system_t *systems[] = {
     &nes_system,
@@ -28,6 +29,7 @@ const rom_system_t *systems[] = {
     &sg1000_system,
     &pce_system,
     &gw_system,
+    &mame_system,
 };
 
 const rom_manager_t rom_mgr = {

@@ -16,6 +16,7 @@
 #include "main_smsplusgx.h"
 #include "main_pce.h"
 #include "main_gw.h"
+#include "main_mame.h"
 
 // Increase when adding new emulators
 #define MAX_EMULATORS 8
@@ -420,6 +421,13 @@ void emulator_start(retro_emulator_file_t *file, bool load_state, bool start_pau
         SCB_CleanDCache_by_Addr((uint32_t *)&__RAM_EMU_START__, (size_t)&_OVERLAY_GW_SIZE);
         app_main_gw(load_state);
 #endif
+    } else if(strcmp(emu->system_name, "MAME") == 0 ) {
+#ifdef ENABLE_EMULATOR_MAME
+        memcpy(&__RAM_EMU_START__, &_OVERLAY_MAME_LOAD_START, (size_t)&_OVERLAY_MAME_SIZE);
+        memset(&_OVERLAY_MAME_BSS_START, 0x0, (size_t)&_OVERLAY_MAME_BSS_SIZE);
+        SCB_CleanDCache_by_Addr((uint32_t *)&__RAM_EMU_START__, (size_t)&_OVERLAY_MAME_SIZE);
+        app_main_mame(load_state);
+#endif
     } else if(strcmp(emu->system_name, "PC Engine") == 0) {
 #ifdef ENABLE_EMULATOR_PCE
       memcpy(&__RAM_EMU_START__, &_OVERLAY_PCE_LOAD_START, (size_t)&_OVERLAY_PCE_SIZE);
@@ -433,7 +441,7 @@ void emulator_start(retro_emulator_file_t *file, bool load_state, bool start_pau
 
 void emulators_init()
 {
-#if !( defined(ENABLE_EMULATOR_GB) || defined(ENABLE_EMULATOR_NES) || defined(ENABLE_EMULATOR_SMS) || defined(ENABLE_EMULATOR_GG) || defined(ENABLE_EMULATOR_COL) || defined(ENABLE_EMULATOR_SG1000) || defined(ENABLE_EMULATOR_PCE) || defined(ENABLE_EMULATOR_GW))
+#if !( defined(ENABLE_EMULATOR_GB) || defined(ENABLE_EMULATOR_NES) || defined(ENABLE_EMULATOR_SMS) || defined(ENABLE_EMULATOR_GG) || defined(ENABLE_EMULATOR_COL) || defined(ENABLE_EMULATOR_SG1000) || defined(ENABLE_EMULATOR_PCE) || defined(ENABLE_EMULATOR_GW) || defined(ENABLE_EMULATOR_MAME))
     // Add gameboy as a placeholder in case no emulator is built.
     add_emulator("Nintendo Gameboy", "gb", "gb", "gnuboy-go", 0, header_gb);
 #endif
@@ -468,6 +476,10 @@ void emulators_init()
 
 #ifdef ENABLE_EMULATOR_GW
     add_emulator("Game & Watch", "gw", "gw", "LCD-Game-Emulator", 0, header_gw);
+#endif
+
+#ifdef ENABLE_EMULATOR_MAME
+    add_emulator("MAME", "mame", "mame", "mame", 0, header_mame);
 #endif
 
 }

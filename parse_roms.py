@@ -60,6 +60,7 @@ SAVE_SIZES = {
     "sg": 60 * 1024,
     "pce": 76 * 1024,
     "gw": 4 * 1024,
+    "mame": 0,
 }
 
 
@@ -706,6 +707,18 @@ class ROMParser:
         total_save_size += save_size
         total_rom_size += rom_size
         build_config += "#define ENABLE_EMULATOR_GW\n" if rom_size > 0 else ""
+
+        save_size, rom_size = self.generate_system(
+            "Core/Src/retro-go/mame_roms.c",
+            "MAME",
+            "mame_system",
+            "mame",
+            ["mame"],
+            "SAVE_MAME_",
+        )
+        total_save_size += save_size
+        total_rom_size += rom_size
+        build_config += "#define ENABLE_EMULATOR_MAME\n" if rom_size > 0 else ""
 
         total_size = total_save_size + total_rom_size
 
