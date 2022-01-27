@@ -7,7 +7,7 @@
 #include "memory.h"
 #include "osdepend.h"
 #include "mame.h"
-#include "common.h"
+#include "mame_common.h"
 #include "drawgfx.h"
 #include "palette.h"
 #include "cpuintrf.h"
