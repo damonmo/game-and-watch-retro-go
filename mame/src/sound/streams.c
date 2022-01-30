@@ -8,6 +8,7 @@
 
 #include "driver.h"
 #include <math.h>
+#include "stack_malloc.h"
 
 
 #define BUFFER_LEN 16384
@@ -103,7 +104,7 @@ void streams_sh_stop(void)
 	{
 		if (stream_buffer[i])
 		{
-			free(stream_buffer[i]);
+			stack_free(stream_buffer[i]);
 		}
 		stream_buffer[i] = 0;
 	}
@@ -194,7 +195,7 @@ int stream_init(const char *name,int default_mixing_level,
 
 	mixer_set_name(channel,name);
 
-	if ((stream_buffer[channel] = (INT16*)malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
+	if ((stream_buffer[channel] = (INT16*)stack_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
 	{
 		return -1;
 	}
@@ -228,7 +229,7 @@ int stream_init_multi(int channels,const char **names,const int *default_mixing_
 	{
 		mixer_set_name(channel+i,names[i]);
 
-		if ((stream_buffer[channel+i] = (INT16*)malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
+		if ((stream_buffer[channel+i] = (INT16*)stack_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
 		{
 			return -1;
 		}

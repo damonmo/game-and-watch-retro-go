@@ -4,6 +4,7 @@
 
 #include "driver.h"
 #include "hiscore.h"
+#include "stack_malloc.c"
 
 #define MAX_CONFIG_LINE_SIZE 48
 
@@ -185,7 +186,7 @@ static void hs_free (void)
 	while (mem_range)
 	{
 		struct mem_range *next = mem_range->next;
-		free(mem_range);
+		stack_free(mem_range);
 		mem_range = next;
 	}
 	state.mem_range = NULL;
@@ -202,7 +203,7 @@ static void hs_load (void)
 		LOG(("loading...\n"));
 		while (mem_range)
 		{
-			UINT8 *data = (UINT8*)malloc(mem_range->num_bytes);
+			UINT8 *data = (UINT8*)stack_malloc(mem_range->num_bytes);
 			if (data)
 			{
 				/*	this buffer will almost certainly be small
@@ -211,7 +212,7 @@ static void hs_load (void)
 				*/
 				osd_fread (f, data, mem_range->num_bytes);
 				copy_to_memory (mem_range->cpu, mem_range->addr, data, mem_range->num_bytes);
-				free(data);
+				stack_free(data);
 			}
 			mem_range = mem_range->next;
 		}
@@ -229,7 +230,7 @@ static void hs_save (void)
 		LOG(("saving...\n"));
 		while (mem_range)
 		{
-			UINT8 *data = (UINT8*)malloc(mem_range->num_bytes);
+			UINT8 *data = (UINT8*)stack_malloc(mem_range->num_bytes);
 			if (data)
 			{
 				/*	this buffer will almost certainly be small
@@ -275,7 +276,7 @@ void hs_open (const char *name)
 			else if (is_mem_range (buffer))
 			{
 				const char *pBuf = buffer;
-				struct mem_range *mem_range = (struct mem_range*)malloc(sizeof(struct mem_range));
+				struct mem_range *mem_range = (struct mem_range*)stack_malloc(sizeof(struct mem_range));
 				if (mem_range)
 				{
 					mem_range->cpu = hexstr2num (&pBuf);

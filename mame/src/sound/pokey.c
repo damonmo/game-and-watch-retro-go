@@ -38,6 +38,7 @@
  *****************************************************************************/
 
 #include "driver.h"
+#include "stack_malloc.c"
 
 /*
  * Defining this produces much more (about twice as much)
@@ -578,10 +579,10 @@ int pokey_sh_start(const struct MachineSound *msound)
 
 	memcpy(&intf, msound->sound_interface, sizeof(struct POKEYinterface));
 
-	poly9 = (UINT8*)malloc(0x1ff+1);
-	rand9 = (UINT8*)malloc(0x1ff+1);
-    poly17 = (UINT8*)malloc(0x1ffff+1);
-    rand17 = (UINT8*)malloc(0x1ffff+1);
+	poly9 = (UINT8*)stack_malloc(0x1ff+1);
+	rand9 = (UINT8*)stack_malloc(0x1ff+1);
+    poly17 = (UINT8*)stack_malloc(0x1ffff+1);
+    rand17 = (UINT8*)stack_malloc(0x1ffff+1);
 	if( !poly9 || !rand9 || !poly17 || !rand17 )
 	{
 		pokey_sh_stop();	/* free any allocated memory again */
@@ -643,13 +644,13 @@ int pokey_sh_start(const struct MachineSound *msound)
 
 void pokey_sh_stop (void)
 {
-	if( rand17 ) free(rand17);
+	if( rand17 ) stack_free(rand17);
 	rand17 = NULL;
-	if( poly17 ) free(poly17);
+	if( poly17 ) stack_free(poly17);
 	poly17 = NULL;
-	if( rand9 )  free(rand9);
+	if( rand9 )  stack_free(rand9);
 	rand9 = NULL;
-	if( poly9 )  free(poly9);
+	if( poly9 )  stack_free(poly9);
 	poly9 = NULL;
 }
 

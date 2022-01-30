@@ -7,6 +7,7 @@
 *********************************************************************/
 
 #include "driver.h"
+#include "stack_malloc.h"
 
 /* These globals are only kept on a machine basis - LBO 042898 */
 unsigned int dispensed_tickets;
@@ -97,7 +98,7 @@ int readroms(void)
 		}
 
 		region_size = romp->offset;
-		if ((Machine->memory_region[region] = (unsigned char *) malloc(region_size)) == 0)
+		if ((Machine->memory_region[region] = (unsigned char *) stack_malloc(region_size)) == 0)
 		{
 			printf("readroms():  Unable to allocate %d bytes of RAM\n",region_size);
 			goto getout;
@@ -188,7 +189,7 @@ int readroms(void)
 						unsigned char *temp;
 
 
-						temp = (unsigned char *) malloc(length);
+						temp = (unsigned char *) stack_malloc(length);
 
 						if (!temp)
 						{
@@ -221,7 +222,7 @@ int readroms(void)
 							}
 						}
 
-						free(temp);
+						stack_free(temp);
 					}
 					else if (romp->length & ROMFLAG_ALTERNATE)
 					{
@@ -243,7 +244,7 @@ int readroms(void)
 						unsigned char *temp;
 						int base=0;
 
-						temp = (unsigned char *) malloc(length);	/* Need to load rom to temporary space */
+						temp = (unsigned char *) stack_malloc(length);	/* Need to load rom to temporary space */
 						osd_fread(f,temp,length);
 
 						/* Copy quad to region */
@@ -287,7 +288,7 @@ int readroms(void)
 							c[i]=temp[i/4];
 
 						which_quad++;
-						free(temp);
+						stack_free(temp);
 					}
 					else
 					{
@@ -426,7 +427,7 @@ getout:
 
 	for (region = 0;region < MAX_MEMORY_REGIONS;region++)
 	{
-		free(Machine->memory_region[region]);
+		stack_free(Machine->memory_region[region]);
 		Machine->memory_region[region] = 0;
 	}
 
@@ -582,7 +583,7 @@ static struct GameSample *read_wav_sample(void *f)
 	}
 
 	/* allocate the game sample */
-	result = malloc(sizeof(struct GameSample) + length);
+	result = stack_malloc(sizeof(struct GameSample) + length);
 	if (result == NULL)
 		return NULL;
 
@@ -630,7 +631,7 @@ struct GameSamples *readsamples(const char **samplenames,const char *basename)
 
 	if (!i) return 0;
 
-	if ((samples = malloc(sizeof(struct GameSamples) + (i-1)*sizeof(struct GameSample))) == 0)
+	if ((samples = stack_malloc(sizeof(struct GameSamples) + (i-1)*sizeof(struct GameSample))) == 0)
 		return 0;
 
 	samples->total = i;
@@ -666,9 +667,9 @@ void freesamples(struct GameSamples *samples)
 	if (samples == 0) return;
 
 	for (i = 0;i < samples->total;i++)
-		free(samples->sample[i]);
+		stack_free(samples->sample[i]);
 
-	free(samples);
+	stack_free(samples);
 }
 
 
@@ -716,7 +717,7 @@ int new_memory_region(int num, int length)
     if (num < MAX_MEMORY_REGIONS)
     {
         Machine->memory_region_length[num] = length;
-        Machine->memory_region[num] = (unsigned char*) malloc(length);
+        Machine->memory_region[num] = (unsigned char*) stack_malloc(length);
         return (Machine->memory_region[num] == NULL) ? 1 : 0;
     }
     else
@@ -727,7 +728,7 @@ int new_memory_region(int num, int length)
             {
                 Machine->memory_region_length[i] = length;
                 Machine->memory_region_type[i] = num;
-                Machine->memory_region[i] = (unsigned char*) malloc(length);
+                Machine->memory_region[i] = (unsigned char*) stack_malloc(length);
                 return (Machine->memory_region[i] == NULL) ? 1 : 0;
             }
         }
@@ -741,7 +742,7 @@ void free_memory_region(int num)
 
 	if (num < MAX_MEMORY_REGIONS)
 	{
-		free(Machine->memory_region[num]);
+		stack_free(Machine->memory_region[num]);
 		Machine->memory_region[num] = 0;
 	}
 	else
@@ -750,7 +751,7 @@ void free_memory_region(int num)
 		{
 			if ((Machine->memory_region_type[i] & ~REGIONFLAG_MASK) == num)
 			{
-				free(Machine->memory_region[i]);
+				stack_free(Machine->memory_region[i]);
 				Machine->memory_region[i] = 0;
 				return;
 			}
