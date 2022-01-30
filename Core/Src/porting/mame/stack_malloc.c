@@ -3,7 +3,7 @@
 #include <string.h>
 #include "stack_malloc.h"
 
-void *_stack_malloc(size_t sz, char *caller_file, char *caller_function)
+void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_function)
 {
     void *addr;
     if(sizeof STACK_MALLOC_BUFFER - STACK_MALLOC_INDEX < sz)
