@@ -1,5 +1,6 @@
 #include "driver.h"
 #include "artwork.h"
+#include "stack_malloc.h"
 
 
 #define VERBOSE 0
@@ -52,12 +53,12 @@ int palette_start(void)
 	int i,num;
 
 
-	game_palette = (unsigned char*)malloc(3 * Machine->drv->total_colors * sizeof(unsigned char));
-	palette_map = (unsigned short*)malloc(Machine->drv->total_colors * sizeof(unsigned short));
+	game_palette = (unsigned char*)stack_malloc(3 * Machine->drv->total_colors * sizeof(unsigned char));
+	palette_map = (unsigned short*)stack_malloc(Machine->drv->total_colors * sizeof(unsigned short));
 	if (Machine->drv->color_table_len)
 	{
-		Machine->game_colortable = (unsigned short*)malloc(Machine->drv->color_table_len * sizeof(unsigned short));
-		Machine->remapped_colortable = (unsigned short*)malloc(Machine->drv->color_table_len * sizeof(unsigned short));
+		Machine->game_colortable = (unsigned short*)stack_malloc(Machine->drv->color_table_len * sizeof(unsigned short));
+		Machine->remapped_colortable = (unsigned short*)stack_malloc(Machine->drv->color_table_len * sizeof(unsigned short));
 	}
 	else Machine->game_colortable = Machine->remapped_colortable = 0;
 
@@ -87,17 +88,17 @@ int palette_start(void)
 			break;
 	}
 
-	shrinked_pens = (unsigned short*)malloc(total_shrinked_pens * sizeof(short));
-	shrinked_palette = (unsigned char*)malloc(3 * total_shrinked_pens * sizeof(unsigned char));
+	shrinked_pens = (unsigned short*)stack_malloc(total_shrinked_pens * sizeof(short));
+	shrinked_palette = (unsigned char*)stack_malloc(3 * total_shrinked_pens * sizeof(unsigned char));
 
-	Machine->pens = (unsigned short*)malloc(Machine->drv->total_colors * sizeof(short));
+	Machine->pens = (unsigned short*)stack_malloc(Machine->drv->total_colors * sizeof(short));
 
 	if ((Machine->drv->video_attributes & VIDEO_MODIFIES_PALETTE))
 	{
 		/* if the palette changes dynamically, */
 		/* we'll need the usage arrays to help in shrinking. */
-		palette_used_colors = (unsigned char*)malloc((1+1+1+3+1) * Machine->drv->total_colors * sizeof(unsigned char));
-		pen_visiblecount = (int*)malloc(2 * Machine->drv->total_colors * sizeof(int));
+		palette_used_colors = (unsigned char*)stack_malloc((1+1+1+3+1) * Machine->drv->total_colors * sizeof(unsigned char));
+		pen_visiblecount = (int*)stack_malloc(2 * Machine->drv->total_colors * sizeof(int));
 
 		if (palette_used_colors == 0 || pen_visiblecount == 0)
 		{
@@ -120,7 +121,7 @@ int palette_start(void)
 
 	if (Machine->color_depth == 8) num = 256;
 	else num = 65536;
-	palette_shadow_table = (unsigned short*)malloc(num * sizeof(unsigned short));
+	palette_shadow_table = (unsigned short*)stack_malloc(num * sizeof(unsigned short));
 	if (palette_shadow_table == 0)
 	{
 		palette_stop();
@@ -142,25 +143,25 @@ int palette_start(void)
 
 void palette_stop(void)
 {
-	free(palette_used_colors);
+	stack_free(palette_used_colors);
 	palette_used_colors = old_used_colors = just_remapped = new_palette = palette_dirty = 0;
-	free(pen_visiblecount);
+	stack_free(pen_visiblecount);
 	pen_visiblecount = 0;
-	free(game_palette);
+	stack_free(game_palette);
 	game_palette = 0;
-	free(palette_map);
+	stack_free(palette_map);
 	palette_map = 0;
-	free(Machine->game_colortable);
+	stack_free(Machine->game_colortable);
 	Machine->game_colortable = 0;
-	free(Machine->remapped_colortable);
+	stack_free(Machine->remapped_colortable);
 	Machine->remapped_colortable = 0;
-	free(shrinked_pens);
+	stack_free(shrinked_pens);
 	shrinked_pens = 0;
-	free(shrinked_palette);
+	stack_free(shrinked_palette);
 	shrinked_palette = 0;
-	free(Machine->pens);
+	stack_free(Machine->pens);
 	Machine->pens = 0;
-	free(palette_shadow_table);
+	stack_free(palette_shadow_table);
 	palette_shadow_table = 0;
 }
 
