@@ -1,4 +1,5 @@
 #include "driver.h"
+#include "stack_malloc.h"
 
 #define SWAP(X,Y) { int temp = X; X = Y; Y = temp; }
 
@@ -129,7 +130,7 @@ static long mask_buffer_alloc( long size ){
 	long result = mask_buffer_used;
 	long req_size = mask_buffer_used + size;
 	if( req_size>mask_buffer_size ){
-		mask_buffer = (unsigned char*)realloc( mask_buffer, req_size );
+		mask_buffer = (unsigned char*)stack_realloc( mask_buffer, req_size );
 		mask_buffer_size = req_size;
 		logerror("increased sprite mask buffer size to %d bytes.\n", mask_buffer_size );
 		if( !mask_buffer ) logerror("Error! insufficient memory for mask_buffer_alloc\n" );
@@ -1256,8 +1257,8 @@ void sprite_close( void ){
 }
 
 struct sprite_list *sprite_list_create( int num_sprites, int flags ){
-	struct sprite *sprite = (struct sprite *)calloc( num_sprites, sizeof(struct sprite) );
-	struct sprite_list *sprite_list = (struct sprite_list *)calloc( 1, sizeof(struct sprite_list) );
+	struct sprite *sprite = (struct sprite *)stack_calloc( num_sprites, sizeof(struct sprite) );
+	struct sprite_list *sprite_list = (struct sprite_list *)stack_calloc( 1, sizeof(struct sprite_list) );
 
 	sprite_list->num_sprites = num_sprites;
 	sprite_list->special_pen = -1;

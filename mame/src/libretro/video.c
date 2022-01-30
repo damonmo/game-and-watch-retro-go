@@ -2,6 +2,7 @@
 #include <math.h>
 #include "vidhrdw/vector.h"
 #include "dirty.h"
+#include "stack_malloc.h"
 
 extern int  global_fps;
 extern int isIpad;
@@ -112,7 +113,7 @@ struct osd_bitmap *osd_alloc_bitmap(int width,int height,int depth)
 	struct osd_bitmap *bitmap;
 
 
-	if ((bitmap = (struct osd_bitmap *)malloc(sizeof(struct osd_bitmap))) != 0)
+	if ((bitmap = (struct osd_bitmap *)stack_malloc(sizeof(struct osd_bitmap))) != 0)
 	{
 		int i,rowlen,rdwidth;
 		unsigned char *bm;
@@ -130,9 +131,9 @@ struct osd_bitmap *osd_alloc_bitmap(int width,int height,int depth)
 		else
 			rowlen =     (rdwidth + 2 * safety) * sizeof(unsigned char);
 
-		if ((bm = (unsigned char*)malloc((height + 2 * safety) * rowlen)) == 0)
+		if ((bm = (unsigned char*)stack_malloc((height + 2 * safety) * rowlen)) == 0)
 		{
-			free(bitmap);
+			stack_free(bitmap);
 			return 0;
 		}
 
@@ -140,10 +141,10 @@ struct osd_bitmap *osd_alloc_bitmap(int width,int height,int depth)
 		/* side of screen is width is not a multiple of 4 */
 		memset(bm,0,(height + 2 * safety) * rowlen);
 
-		if ((bitmap->line = (unsigned char**)malloc((height + 2 * safety) * sizeof(unsigned char *))) == 0)
+		if ((bitmap->line = (unsigned char**)stack_malloc((height + 2 * safety) * sizeof(unsigned char *))) == 0)
 		{
-			free(bm);
-			free(bitmap);
+			stack_free(bm);
+			stack_free(bitmap);
 			return 0;
 		}
 
@@ -196,9 +197,9 @@ void osd_free_bitmap(struct osd_bitmap *bitmap)
 	if (bitmap)
 	{
 		bitmap->line -= safety;
-		free(bitmap->line);
-		free(bitmap->_private);
-		free(bitmap);
+		stack_free(bitmap->line);
+		stack_free(bitmap->_private);
+		stack_free(bitmap);
 	}
 }
 
@@ -553,11 +554,11 @@ int osd_set_display(int width,int height,int depth,int attributes,int orientatio
 /* shut up the display */
 void osd_close_display(void)
 {
-	free(dirtycolor);
+	stack_free(dirtycolor);
 	dirtycolor = 0;
-	free(current_palette);
+	stack_free(current_palette);
 	current_palette = 0;
-	free(palette_16bit_lookup);
+	stack_free(palette_16bit_lookup);
 	palette_16bit_lookup = 0;
 }
 
@@ -571,9 +572,9 @@ int osd_allocate_colors(unsigned int totalcolors,const unsigned char *palette,un
 		screen_colors += 2;
 	else screen_colors = 256;
 
-	dirtycolor = (unsigned int*)malloc(screen_colors * sizeof(int));
-	current_palette = (unsigned char*)malloc(3 * screen_colors * sizeof(unsigned char));
-	palette_16bit_lookup = (UINT32*)malloc(screen_colors * sizeof(palette_16bit_lookup[0]));
+	dirtycolor = (unsigned int*)stack_malloc(screen_colors * sizeof(int));
+	current_palette = (unsigned char*)stack_malloc(3 * screen_colors * sizeof(unsigned char));
+	palette_16bit_lookup = (UINT32*)stack_malloc(screen_colors * sizeof(palette_16bit_lookup[0]));
 	if (dirtycolor == 0 || current_palette == 0 || palette_16bit_lookup == 0)
 		return 1;
 

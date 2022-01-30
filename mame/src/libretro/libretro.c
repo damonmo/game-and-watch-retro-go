@@ -17,6 +17,7 @@
 #include "driver.h"
 #include "allegro.h"
 #include <file/file_path.h>
+#include "stack_malloc.h"
 
 #ifndef RETROK_TILDE
 #define RETROK_TILDE 178
@@ -593,7 +594,7 @@ void retro_init(void)
 #ifdef _3DS
    gp2x_screen15 = (unsigned short *) linearMemAlign(640 * 480 * 2, 0x80);
 #else
-   gp2x_screen15 = (unsigned short *) malloc(640 * 480 * 2);
+   gp2x_screen15 = (unsigned short *) stack_malloc(640 * 480 * 2);
 #endif
 #ifndef WANT_LIBCO
    libretro_cond  = scond_new();
@@ -608,12 +609,12 @@ void retro_init(void)
 
 void retro_deinit(void)
 {
-   free(IMAMEBASEPATH);
-   free(IMAMESAMPLEPATH);
+   stack_free(IMAMEBASEPATH);
+   stack_free(IMAMESAMPLEPATH);
 #ifdef _3DS
    linearFree(gp2x_screen15);
 #else
-   free(gp2x_screen15);
+   stack_free(gp2x_screen15);
 #endif
 #ifndef WANT_LIBCO
    scond_free(libretro_cond);
@@ -838,8 +839,8 @@ bool retro_load_game(const struct retro_game_info *info)
    printf("MAME2000_SYS_DIRECTORY: %s\n", core_sys_directory);
    printf("MAME2000_SAVE_DIRECTORY: %s\n", core_save_directory);
 
-   IMAMEBASEPATH = (char *) malloc(1024);
-   IMAMESAMPLEPATH = (char *) malloc(1024);
+   IMAMEBASEPATH = (char *) stack_malloc(1024);
+   IMAMESAMPLEPATH = (char *) stack_malloc(1024);
 
 
    int i;
@@ -875,35 +876,35 @@ bool retro_load_game(const struct retro_game_info *info)
    //parse_cmdline (argc, argv, game_index);
 
    //Set default path
-   nvdir=(char *) malloc(1024);sprintf(nvdir,"%s%c%s\0",core_save_directory,slash,"nvram");
+   nvdir=(char *) stack_malloc(1024);sprintf(nvdir,"%s%c%s\0",core_save_directory,slash,"nvram");
    i=create_path_recursive(nvdir);
    if(i!=0)printf("error %d creating nvram \"%s\"\n", i,nvdir);
 
-   hidir=(char *) malloc(1024);sprintf(hidir,"%s%c%s\0",core_save_directory,slash,"hi");
+   hidir=(char *) stack_malloc(1024);sprintf(hidir,"%s%c%s\0",core_save_directory,slash,"hi");
    i=create_path_recursive(hidir);
    if(i!=0)printf("error %d creating hi \"%s\"\n", i,hidir);
 
-   cfgdir=(char *) malloc(1024);sprintf(cfgdir,"%s%c%s\0",core_save_directory,slash,"cfg");
+   cfgdir=(char *) stack_malloc(1024);sprintf(cfgdir,"%s%c%s\0",core_save_directory,slash,"cfg");
    i=create_path_recursive(cfgdir);
    if(i!=0)printf("error %d creating cfg \"%s\"\n", i,cfgdir);
 
-   screenshotdir=(char *) malloc(1024);sprintf(screenshotdir,"%s%c%s\0",core_save_directory,slash,"snap");
+   screenshotdir=(char *) stack_malloc(1024);sprintf(screenshotdir,"%s%c%s\0",core_save_directory,slash,"snap");
    i=create_path_recursive(screenshotdir);
    if(i!=0)printf("error %d creating snap \"%s\"\n", i,screenshotdir);
 
-   memcarddir=(char *) malloc(1024);sprintf(memcarddir,"%s%c%s\0",core_save_directory,slash,"memcard");
+   memcarddir=(char *) stack_malloc(1024);sprintf(memcarddir,"%s%c%s\0",core_save_directory,slash,"memcard");
    i=create_path_recursive(memcarddir);
    if(i!=0)printf("error %d creating memcard \"%s\"\n", i,memcarddir);
 
-   stadir=(char *) malloc(1024);sprintf(stadir,"%s%c%s\0",core_sys_directory,slash,"sta");
+   stadir=(char *) stack_malloc(1024);sprintf(stadir,"%s%c%s\0",core_sys_directory,slash,"sta");
    i=create_path_recursive(stadir);
    if(i!=0)printf("error %d creating sta \"%s\"\n", i,stadir);
 
-   artworkdir=(char *) malloc(1024);sprintf(artworkdir,"%s%c%s\0",core_sys_directory,slash,"artwork");
+   artworkdir=(char *) stack_malloc(1024);sprintf(artworkdir,"%s%c%s\0",core_sys_directory,slash,"artwork");
    i=create_path_recursive(artworkdir);
    if(i!=0)printf("error %d creating artwork \"%s\"\n", i,artworkdir);
 
-   cheatdir=(char *) malloc(1024);sprintf(cheatdir,"%s%c%s\0",core_sys_directory,slash,"cheat");
+   cheatdir=(char *) stack_malloc(1024);sprintf(cheatdir,"%s%c%s\0",core_sys_directory,slash,"cheat");
    i=create_path_recursive(cheatdir);
    if(i!=0)printf("error %d creating cheat \"%s\"\n", i,cheatdir);
 

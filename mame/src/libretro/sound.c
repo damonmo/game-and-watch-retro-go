@@ -1,6 +1,7 @@
 #include "driver.h"
 #include "minimal.h"
 #include "libretro.h"
+#include "stack_malloc.h"
 
 int samples_per_frame = 0;
 short *samples_buffer;
@@ -18,8 +19,8 @@ int osd_start_audio_stream(int stereo)
 
 	if (Machine->sample_rate == 0) return 0;
 
-	samples_buffer = (short *) calloc(samples_per_frame, 2 + usestereo * 2);
-	if (!usestereo) conversion_buffer = (short *) calloc(samples_per_frame, 4);
+	samples_buffer = (short *) stack_calloc(samples_per_frame, 2 + usestereo * 2);
+	if (!usestereo) conversion_buffer = (short *) stack_calloc(samples_per_frame, 4);
 	
 	return samples_per_frame;
 }
