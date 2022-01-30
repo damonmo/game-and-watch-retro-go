@@ -285,7 +285,7 @@ struct CustomSound_interface
 int sound_start(void);
 void sound_stop(void);
 void sound_update(void);
-void sound_reset(void);
+void mame_sound_reset(void);
 
 /* returns name of the sound system */
 const char *sound_name(const struct MachineSound *msound);

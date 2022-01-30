@@ -686,7 +686,7 @@ reset:
 	watchdog_counter = -1;
 
 	/* reset sound chips */
-	sound_reset();
+	mame_sound_reset();
 
 	/* enable all CPUs (except for audio CPUs if the sound is off) */
 	for (i = 0; i < totalcpu; i++)

@@ -916,7 +916,7 @@ void sound_update(void)
 }
 
 
-void sound_reset(void)
+void mame_sound_reset(void)
 {
 	int totalsound = 0;
 
