@@ -785,8 +785,8 @@ void name(int pc)																		\
 	}																					\
 																						\
 	/* do not support on callback memory region */										\
-	logerror("CPU #%d PC %04x: warning - op-code execute on mapped i/o\n",              \
-				cpu_getactivecpu(),cpu_get_pc());										\
+	/*logerror("CPU #%d PC %04x: warning - op-code execute on mapped i/o\n",              \
+				cpu_getactivecpu(),cpu_get_pc());*/										\
 }
 
 
