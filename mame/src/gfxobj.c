@@ -133,6 +133,7 @@
 
 #include "driver.h"
 /* #include "gfxobj.h" */
+#include "stack_malloc.h"
 
 static struct gfx_object_list *first_object_list;
 
@@ -146,9 +147,9 @@ void gfxobj_close(void)
 	struct gfx_object_list *object_list,*object_next;
 	for(object_list = first_object_list ; object_list != 0 ; object_list=object_next)
 	{
-		free(object_list->objects);
+		stack_free(object_list->objects);
 		object_next = object_list->next;
-		free(object_list);
+		stack_free(object_list);
 	}
 }
 
@@ -163,14 +164,14 @@ struct gfx_object_list *gfxobj_create(int nums,int max_priority,const struct gfx
 		return 0;
 
 	/* allocate object liset */
-	if( (object_list = (struct gfx_object_list*)malloc(sizeof(struct gfx_object_list))) == 0 )
+	if( (object_list = (struct gfx_object_list*)stack_malloc(sizeof(struct gfx_object_list))) == 0 )
 		return 0;
 	memset(object_list,0,sizeof(struct gfx_object_list));
 
 	/* allocate objects */
-	if( (object_list->objects = (struct gfx_object*)malloc(nums*sizeof(struct gfx_object))) == 0)
+	if( (object_list->objects = (struct gfx_object*)stack_malloc(nums*sizeof(struct gfx_object))) == 0)
 	{
-		free(object_list);
+		stack_free(object_list);
 		return 0;
 	}
 	if(def_object == 0)

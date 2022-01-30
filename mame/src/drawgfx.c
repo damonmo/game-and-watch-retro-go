@@ -1,6 +1,7 @@
 #ifndef DECLARE
 
 #include "driver.h"
+#include "stack_malloc.h"
 
 /* LBO */
 #ifdef MSB_FIRST
@@ -129,7 +130,7 @@ struct GfxElement *decodegfx(const UINT8 *src,const struct GfxLayout *gl)
 	struct GfxElement *gfx;
 
 
-	if ((gfx = malloc(sizeof(struct GfxElement))) == 0)
+	if ((gfx = stack_malloc(sizeof(struct GfxElement))) == 0)
 		return 0;
 	memset(gfx,0,sizeof(struct GfxElement));
 
@@ -146,9 +147,9 @@ struct GfxElement *decodegfx(const UINT8 *src,const struct GfxLayout *gl)
 
 	gfx->line_modulo = gfx->width;
 	gfx->char_modulo = gfx->line_modulo * gfx->height;
-	if ((gfx->gfxdata = (unsigned char *) malloc(gl->total * gfx->char_modulo * sizeof(UINT8))) == 0)
+	if ((gfx->gfxdata = (unsigned char *) stack_malloc(gl->total * gfx->char_modulo * sizeof(UINT8))) == 0)
 	{
-		free(gfx);
+		stack_free(gfx);
 		return 0;
 	}
 
@@ -157,7 +158,7 @@ struct GfxElement *decodegfx(const UINT8 *src,const struct GfxLayout *gl)
 
 	gfx->pen_usage = 0; /* need to make sure this is NULL if the next test fails) */
 	if (gfx->color_granularity <= 32)	/* can't handle more than 32 pens */
-		gfx->pen_usage = (unsigned int *) malloc(gfx->total_elements * sizeof(int));
+		gfx->pen_usage = (unsigned int *) stack_malloc(gfx->total_elements * sizeof(int));
 		/* no need to check for failure, the code can work without pen_usage */
 
 	for (c = 0;c < gl->total;c++)
@@ -171,9 +172,9 @@ void freegfx(struct GfxElement *gfx)
 {
 	if (gfx)
 	{
-		free(gfx->pen_usage);
-		free(gfx->gfxdata);
-		free(gfx);
+		stack_free(gfx->pen_usage);
+		stack_free(gfx->gfxdata);
+		stack_free(gfx);
 	}
 }
 
