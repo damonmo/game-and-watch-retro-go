@@ -18,6 +18,7 @@
 #include "driver.h"
 #include "png.h"
 #include "artwork.h"
+#include "stack_malloc.h"
 
 
 /* Local variables */
@@ -177,16 +178,16 @@ void artwork_free(struct artwork **a)
 		if ((*a)->vector_bitmap)
 			bitmap_free((*a)->vector_bitmap);
 		if ((*a)->orig_palette)
-			free((*a)->orig_palette);
+			stack_free((*a)->orig_palette);
 		if ((*a)->transparency)
-			free((*a)->transparency);
+			stack_free((*a)->transparency);
 		if ((*a)->brightness)
-			free((*a)->brightness);
+			stack_free((*a)->brightness);
 		if ((*a)->rgb)
-			free((*a)->rgb);
+			stack_free((*a)->rgb);
 		if ((*a)->pTable)
-			free((*a)->pTable);
-		free(*a);
+			stack_free((*a)->pTable);
+		stack_free(*a);
 
 		*a = NULL;
 	}
@@ -929,7 +930,7 @@ static unsigned int *transparency_hist (struct artwork *a, int num_shades)
 	int num_pix=0, min_shades;
 	UINT8 pen;
 
-	if ((hist = (unsigned int *)malloc(a->num_pens_trans*sizeof(unsigned int)))==NULL)
+	if ((hist = (unsigned int *)stack_malloc(a->num_pens_trans*sizeof(unsigned int)))==NULL)
 	{
 		logerror("Not enough memory!\n");
 		return NULL;
@@ -1154,7 +1155,7 @@ static void allocate_artwork_mem (int width, int height, struct artwork **a)
 		width = temp;
 	}
 
-	*a = (struct artwork *)malloc(sizeof(struct artwork));
+	*a = (struct artwork *)stack_malloc(sizeof(struct artwork));
 	if (*a == 0)
 	{
 		logerror("Not enough memory for artwork!\n");
@@ -1197,14 +1198,14 @@ static void allocate_artwork_mem (int width, int height, struct artwork **a)
 		return;
 	}
 
-	if (((*a)->pTable = (UINT8*)malloc(256*256))==0)
+	if (((*a)->pTable = (UINT8*)stack_malloc(256*256))==0)
 	{
 		logerror("Not enough memory.\n");
 		artwork_free(a);
 		return;
 	}
 
-	if (((*a)->brightness = (UINT8*)malloc(256*256))==0)
+	if (((*a)->brightness = (UINT8*)stack_malloc(256*256))==0)
 	{
 		logerror("Not enough memory.\n");
 		artwork_free(a);
@@ -1212,7 +1213,7 @@ static void allocate_artwork_mem (int width, int height, struct artwork **a)
 	}
 	memset ((*a)->brightness, 0, 256*256);
 
-	if (((*a)->rgb = (UINT64*)malloc(width*height*sizeof(UINT64)))==0)
+	if (((*a)->rgb = (UINT64*)stack_malloc(width*height*sizeof(UINT64)))==0)
 	{
 		logerror("Not enough memory.\n");
 		artwork_free(a);
@@ -1237,7 +1238,7 @@ static UINT8 *create_15bit_palette ( void )
 	int r, g, b;
 	UINT8 *palette, *tmp;
 
-	if ((palette = (UINT8*)malloc(3 * 32768)) == 0)
+	if ((palette = (UINT8*)stack_malloc(3 * 32768)) == 0)
 		return 0;
 
 	tmp = palette;
@@ -1354,7 +1355,7 @@ static int artwork_read_bitmap(const char *file_name, struct osd_bitmap **bitmap
 					tmp++;
 				}
 
-			free(p->palette);
+			stack_free(p->palette);
 
 			/* create 15 bit palette */
 			if ((p->palette = create_15bit_palette()) == 0)
@@ -1415,7 +1416,7 @@ static int artwork_read_bitmap(const char *file_name, struct osd_bitmap **bitmap
 		return 0;
 		break;
 	}
-	free(p->image);
+	stack_free(p->image);
 	return 1;
 }
 
@@ -1775,14 +1776,14 @@ void overlay_create(const struct artwork_element *ae, unsigned int start_pen, un
 
 	if (Machine->scrbitmap->depth == 8)
 	{
-		if ((artwork_overlay->orig_palette = (UINT8 *)malloc(256*3)) == NULL)
+		if ((artwork_overlay->orig_palette = (UINT8 *)stack_malloc(256*3)) == NULL)
 		{
 			logerror("Not enough memory for overlay!\n");
 			overlay_free();
 			return;
 		}
 
-		if ((artwork_overlay->transparency = (UINT8 *)malloc(256)) == NULL)
+		if ((artwork_overlay->transparency = (UINT8 *)stack_malloc(256)) == NULL)
 		{
 			logerror("Not enough memory for overlay!\n");
 			overlay_free();

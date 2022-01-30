@@ -7,6 +7,7 @@
 ******************************************************************************/
 
 #include "driver.h"
+#include "stack_malloc.h"
 
 #include <time.h>
 #include <assert.h>
@@ -42,7 +43,7 @@ int code_init(void)
 		&& __code_joy_last + 1 == __code_max );
 
 	/* allocate */
-	code_map = (struct code_info*)malloc( __code_max * sizeof(struct code_info) );
+	code_map = (struct code_info*)stack_malloc( __code_max * sizeof(struct code_info) );
 	if (!code_map)
 		return -1;
 
@@ -294,7 +295,7 @@ void code_close(void)
 #endif
 
 	code_mac = 0;
-	free(code_map);
+	stack_free(code_map);
 	code_map = 0;
 }
 

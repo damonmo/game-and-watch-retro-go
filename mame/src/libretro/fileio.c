@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "driver.h"
+#include "stack_malloc.h"
 #include "rom_manager.h"
 
 /* Verbose outputs to error.log ? */
@@ -79,7 +80,7 @@ void *osd_fopen (const char *game, const char *filename, int filetype, int _writ
     char *addr;
 	int found = 0;
 	
-	FakeFileHandle *f = (FakeFileHandle *) malloc(sizeof (FakeFileHandle));
+	FakeFileHandle *f = (FakeFileHandle *) stack_malloc(sizeof (FakeFileHandle));
 
 	if( !f )
 	{
@@ -120,7 +121,7 @@ void *osd_fopen (const char *game, const char *filename, int filetype, int _writ
    }
 	if( !found )
 	{
-		free(f);
+		stack_free(f);
 		return 0;
 	}
 	return f;
@@ -233,7 +234,7 @@ int osd_fseek (void *file, int offset, int whence)
 void osd_fclose (void *file)
 {
    FakeFileHandle *f = (FakeFileHandle *) file;
-   free(f);
+   stack_free(f);
 }
 
 static int checksum_file (const char *file, unsigned char **p, unsigned int *size, unsigned int *crc)

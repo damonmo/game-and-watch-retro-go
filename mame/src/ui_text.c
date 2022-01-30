@@ -9,6 +9,7 @@
 
 #include "driver.h"
 #include "ui_text.h"
+#include "stack_malloc.h"
 
 struct lang_struct lang;
 
@@ -270,7 +271,7 @@ int uistring_init (void *langfile)
 					ptr = strtok (transline, "\n");
 
 					/* Allocate storage and copy the string */
-					trans_text[i] = (char*) malloc(strlen(transline)+1);
+					trans_text[i] = (char*) stack_malloc(strlen(transline)+1);
 					strcpy (trans_text[i], transline);
 
 					/* Done searching */
@@ -293,7 +294,7 @@ void uistring_shutdown (void)
 	{
 		if (trans_text[i])
 		{
-			free(trans_text[i]);
+			stack_free(trans_text[i]);
 			trans_text[i] = NULL;
 		}
 	}

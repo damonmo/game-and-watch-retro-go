@@ -11,6 +11,7 @@
 #include "osd_cpu.h"
 #include "driver.h"
 #include "datafile.h"
+#include "stack_malloc.h"
 
 
 /****************************************************************************
@@ -374,7 +375,7 @@ static int index_datafile (struct tDatafileIndex **_index)
 	if (ParseSeek (0L, SEEK_SET)) return 0;
 
 	/* allocate index */
-	idx = *_index = (struct tDatafileIndex*)malloc(MAX_DATAFILE_ENTRIES * sizeof (struct tDatafileIndex));
+	idx = *_index = (struct tDatafileIndex*)stack_malloc(MAX_DATAFILE_ENTRIES * sizeof (struct tDatafileIndex));
 	if (NULL == idx) return 0;
 
 	/* loop through datafile */

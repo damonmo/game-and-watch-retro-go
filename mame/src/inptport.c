@@ -15,6 +15,7 @@ TODO:	remove the 1 analog device per port limitation
 
 #ifdef MAME_NET
 #include "network.h"
+#include "stack_malloc.h"
 
 static unsigned short input_port_defaults[MAX_INPUT_PORTS];
 static int default_player;
@@ -1741,7 +1742,7 @@ struct InputPort* input_port_allocate(const struct InputPortTiny *src)
 
 	total = input_port_count(src);
 
-	base = (struct InputPort*)malloc(total * sizeof(struct InputPort));
+	base = (struct InputPort*)stack_malloc(total * sizeof(struct InputPort));
 	dst = base;
 
 	while (src->type != IPT_END)
@@ -1813,7 +1814,7 @@ struct InputPort* input_port_allocate(const struct InputPortTiny *src)
 
 void input_port_free(struct InputPort* dst)
 {
-	free(dst);
+	stack_free(dst);
 }
 
 /*

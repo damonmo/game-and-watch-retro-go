@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include <stdarg.h>
 #include "ui_text.h"
+#include "stack_malloc.h"
 
 #ifdef MESS
   #include "mess/mess.h"
@@ -963,7 +964,7 @@ static void showcharset(struct osd_bitmap *bitmap)
 
 	if (palette_used_colors)
 	{
-		orig_used_colors = (unsigned char*) malloc(Machine->drv->total_colors * sizeof(unsigned char));
+		orig_used_colors = (unsigned char*) stack_malloc(Machine->drv->total_colors * sizeof(unsigned char));
 		if (!orig_used_colors) return;
 
 		memcpy(orig_used_colors,palette_used_colors,Machine->drv->total_colors * sizeof(unsigned char));
@@ -1255,7 +1256,7 @@ static void showcharset(struct osd_bitmap *bitmap)
 		palette_recalc();
 		/* restore the game used colors array */
 		memcpy(palette_used_colors,orig_used_colors,Machine->drv->total_colors * sizeof(unsigned char));
-		free(orig_used_colors);
+		stack_free(orig_used_colors);
 	}
 
 	return;
@@ -2550,7 +2551,7 @@ static int displayhistory (struct osd_bitmap *bitmap, int selected)
 	if (!buf)
 	{
 		/* allocate a buffer for the text */
-		buf = (char*) malloc(8192);
+		buf = (char*) stack_malloc(8192);
 		if (buf)
 		{
 			/* try to load entry */
@@ -2568,7 +2569,7 @@ static int displayhistory (struct osd_bitmap *bitmap, int selected)
 			}
 			else
 			{
-				free(buf);
+				stack_free(buf);
 				buf = 0;
 			}
 		}
@@ -2622,7 +2623,7 @@ static int displayhistory (struct osd_bitmap *bitmap, int selected)
 		/* force buffer to be recreated */
 		if (buf)
 		{
-			free(buf);
+			stack_free(buf);
 			buf = 0;
 		}
 	}
