@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include "driver.h"
 #include "osd_cpu.h"
-
+#include "stack_malloc.h"
 
 #define VERBOSE 0
 
@@ -371,7 +371,7 @@ static int memory_allocate_ext (void)
 			ext->start = lowest;
 			ext->end = end - 1;
 			ext->region = region;
-			ext->data = (unsigned char *) malloc(end - lowest);
+			ext->data = (unsigned char *) stack_malloc(end - lowest);
 
 			/* if that fails, we're through */
 			if (!ext->data)
@@ -592,12 +592,12 @@ int memory_init(void)
 		mhmask[cpu][2]	= MHMASK(abits3);		/*3rd*/
 
 		/* allocate current element */
-		if( (cur_mr_element[cpu] = (MHELE *)malloc(sizeof(MHELE)<<abits1)) == 0 )
+		if( (cur_mr_element[cpu] = (MHELE *)stack_malloc(sizeof(MHELE)<<abits1)) == 0 )
 		{
 			memory_shutdown();
 			return 0;
 		}
-		if( (cur_mw_element[cpu] = (MHELE *)malloc(sizeof(MHELE)<<abits1)) == 0 )
+		if( (cur_mw_element[cpu] = (MHELE *)stack_malloc(sizeof(MHELE)<<abits1)) == 0 )
 		{
 			memory_shutdown();
 			return 0;
@@ -688,31 +688,31 @@ void memory_shutdown(void)
 	{
 		if( cur_mr_element[cpu] != 0 )
 		{
-			free( cur_mr_element[cpu] );
+			stack_free( cur_mr_element[cpu] );
 			cur_mr_element[cpu] = 0;
 		}
 		if( cur_mw_element[cpu] != 0 )
 		{
-			free( cur_mw_element[cpu] );
+			stack_free( cur_mw_element[cpu] );
 			cur_mw_element[cpu] = 0;
 		}
 
 		if (readport[cpu] != 0)
 		{
-			free(readport[cpu]);
+			stack_free(readport[cpu]);
 			readport[cpu] = 0;
 		}
 
 		if (writeport[cpu] != 0)
 		{
-			free(writeport[cpu]);
+			stack_free(writeport[cpu]);
 			writeport[cpu] = 0;
 		}
 	}
 
 	/* ASG 980121 -- free all the external memory */
 	for (ext = ext_memory; ext->data; ext++)
-		free(ext->data);
+		stack_free(ext->data);
 	memset (ext_memory, 0, sizeof (ext_memory));
 }
 
@@ -1163,11 +1163,11 @@ static void *install_port_read_handler_common(int cpu, int start, int end,
 
 	if (readport[cpu] == 0)
 	{
-		readport[cpu] = malloc(readport_size[cpu]);
+		readport[cpu] = stack_malloc(readport_size[cpu]);
 	}
 	else
 	{
-		readport[cpu] = realloc(readport[cpu], readport_size[cpu]);
+		readport[cpu] = stack_realloc(readport[cpu], readport_size[cpu]);
 	}
 
 	if (readport[cpu] == 0)  return 0;
@@ -1208,11 +1208,11 @@ static void *install_port_write_handler_common(int cpu, int start, int end,
 
 	if (writeport[cpu] == 0)
 	{
-		writeport[cpu] = malloc(writeport_size[cpu]);
+		writeport[cpu] = stack_malloc(writeport_size[cpu]);
 	}
 	else
 	{
-		writeport[cpu] = realloc(writeport[cpu], writeport_size[cpu]);
+		writeport[cpu] = stack_realloc(writeport[cpu], writeport_size[cpu]);
 	}
 
 	if (writeport[cpu] == 0)  return 0;
