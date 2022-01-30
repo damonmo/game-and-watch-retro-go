@@ -7,7 +7,6 @@
 *********************************************************************/
 
 #include "driver.h"
-#include "png.h"
 
 /* These globals are only kept on a machine basis - LBO 042898 */
 unsigned int dispensed_tickets;
