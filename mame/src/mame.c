@@ -4,6 +4,7 @@
 #include "ui_text.h" /* LBO 042400 */
 #include "artwork.h"
 #include "port_wrapper.h"
+#include "stack_malloc.h"
 
 extern int safe_render_path;
 extern int iOS_fixedRes;
@@ -286,7 +287,7 @@ void shutdown_machine(void)
 	for (i = 0;i < MAX_MEMORY_REGIONS;i++)
 	{
 		if (Machine->memory_region[i])
-			free(Machine->memory_region[i]);
+			stack_free(Machine->memory_region[i]);
 		Machine->memory_region[i] = 0;
 		Machine->memory_region_length[i] = 0;
 		Machine->memory_region_type[i] = 0;
@@ -327,8 +328,8 @@ static void vh_close(void)
 	palette_stop();
 
 	if (drv->video_attributes & VIDEO_BUFFERS_SPRITERAM) {
-		if (buffered_spriteram) free(buffered_spriteram);
-		if (buffered_spriteram_2) free(buffered_spriteram_2);
+		if (buffered_spriteram) stack_free(buffered_spriteram);
+		if (buffered_spriteram_2) stack_free(buffered_spriteram_2);
 		buffered_spriteram=NULL;
 		buffered_spriteram_2=NULL;
 	}
@@ -478,9 +479,9 @@ static int vh_open(void)
 	/* create spriteram buffers if necessary */
 	if (drv->video_attributes & VIDEO_BUFFERS_SPRITERAM) {
 		if (spriteram_size!=0) {
-			buffered_spriteram= (unsigned char *) malloc(spriteram_size);
+			buffered_spriteram= (unsigned char *) stack_malloc(spriteram_size);
 			if (!buffered_spriteram) { vh_close(); return 1; }
-			if (spriteram_2_size!=0) buffered_spriteram_2 = (unsigned char *) malloc(spriteram_2_size);
+			if (spriteram_2_size!=0) buffered_spriteram_2 = (unsigned char *) stack_malloc(spriteram_2_size);
 			if (spriteram_2_size && !buffered_spriteram_2) { vh_close(); return 1; }
 		} else {
 			logerror("vh_open():  Video buffers spriteram but spriteram_size is 0\n");
@@ -619,7 +620,7 @@ int run_machine(void)
 						/* invalidate contents to avoid subtle bugs */
 						for (i = 0;i < memory_region_length(region);i++)
 							memory_region(region)[i] = rand();
-						free(Machine->memory_region[region]);
+						stack_free(Machine->memory_region[region]);
 						Machine->memory_region[region] = 0;
 					}
 				}
