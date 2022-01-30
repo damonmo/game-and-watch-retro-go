@@ -9,6 +9,7 @@
 #include "osdepend.h"
 #include "state.h"
 #include "mame.h"
+#include "stack_malloc.h"
 
 
 /* A forward linked list of the contents of a section */
@@ -83,11 +84,11 @@ void state_free_section( void *s )
     v2 = state->list;
     while( v2 )
     {
-        if( v2->name ) free( v2->name );
-        if( v2->data ) free( v2->data );
+        if( v2->name ) stack_free( v2->name );
+        if( v2->data ) stack_free( v2->data );
         v1 = v2;
         v2 = v2->next;
-        free( v1 );
+        stack_free( v1 );
     }
     state->list = NULL;
 }
@@ -95,7 +96,7 @@ void state_free_section( void *s )
 void *state_create(const char *name)
 {
 	state_handle *state;
-	state = (state_handle *) malloc( sizeof(state_handle) );
+	state = (state_handle *) stack_malloc( sizeof(state_handle) );
 	if( !state ) return NULL;
 	state->cur_module = NULL;
 	state->cur_instance = 0;
@@ -103,7 +104,7 @@ void *state_create(const char *name)
 	state->file = osd_fopen( name, NULL, OSD_FILETYPE_STATE, 1 );
 	if( !state->file )
 	{
-		free(state);
+		stack_free(state);
 		return NULL;
 	}
 	return state;
@@ -112,7 +113,7 @@ void *state_create(const char *name)
 void *state_open(const char *name)
 {
 	state_handle *state;
-	state = (state_handle *) malloc( sizeof(state_handle) );
+	state = (state_handle *) stack_malloc( sizeof(state_handle) );
 	if( !state ) return NULL;
 	state->cur_module = NULL;
 	state->cur_instance = 0;
@@ -120,7 +121,7 @@ void *state_open(const char *name)
 	state->file = osd_fopen( name, NULL, OSD_FILETYPE_STATE, 0 );
 	if( !state->file )
 	{
-		free(state);
+		stack_free(state);
 		return NULL;
 	}
 	return state;
@@ -132,7 +133,7 @@ void state_close( void *s )
     if( !state ) return;
 	state_free_section( state );
 	if( state->file ) osd_fclose( state->file );
-	free( state );
+	stack_free( state );
 }
 
 /* Output a formatted string to the state file */
@@ -421,13 +422,13 @@ void state_load_section( void *s, const char *module, int instance )
 					/* next state_var */
 					v = state->list;
 					while( v->next ) v = v->next;
-					v->next = (struct tag_state_var*)malloc( sizeof(state_var) );
+					v->next = (struct tag_state_var*)stack_malloc( sizeof(state_var) );
 					v = v->next;
 				}
 				else
 				{
 					/* first state_var */
-					state->list = (state_var*)malloc(sizeof(state_var));
+					state->list = (state_var*)stack_malloc(sizeof(state_var));
 					v = state->list;
 				}
 				if( !v )
@@ -435,7 +436,7 @@ void state_load_section( void *s, const char *module, int instance )
 					logerror("state_load_section: Out of memory while reading '%s'\n", section);
 					return;
 				}
-				v->name = (char*)malloc(strlen(buffer) + 1);
+				v->name = (char*)stack_malloc(strlen(buffer) + 1);
 				if( !v->name )
 				{
 					logerror("state_load_section: Out of memory while reading '%s'\n", section);
@@ -455,9 +456,9 @@ void state_load_section( void *s, const char *module, int instance )
 					{
 						v->chunk += CHUNK_SIZE;
 						if( v->data )
-							v->data = realloc(v->data, v->chunk);
+							v->data = stack_realloc(v->data, v->chunk);
 						else
-							v->data = malloc(v->chunk);
+							v->data = stack_malloc(v->chunk);
 					}
 					/* check if the (re-)allocation failed */
 					if( !v->data )

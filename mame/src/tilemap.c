@@ -34,6 +34,7 @@ To Do:
 
 #include "driver.h"
 #include "tilemap.h"
+#include "stack_malloc.h"
 
 #define SWAP(X,Y) {UINT32 temp=X; X=Y; Y=temp; }
 
@@ -77,19 +78,19 @@ static int mappings_create( struct tilemap *tilemap ){
 	max_memory_offset++;
 	tilemap->max_memory_offset = max_memory_offset;
 	/* logical to cached (tilemap_mark_dirty) */
-	tilemap->memory_offset_to_cached_index = (int*)malloc( sizeof(int)*max_memory_offset );
+	tilemap->memory_offset_to_cached_index = (int*)stack_malloc( sizeof(int)*max_memory_offset );
 	if( tilemap->memory_offset_to_cached_index ){
 		/* cached to logical (get_tile_info) */
-		tilemap->cached_index_to_memory_offset = (UINT32*)malloc( sizeof(UINT32)*tilemap->num_tiles );
+		tilemap->cached_index_to_memory_offset = (UINT32*)stack_malloc( sizeof(UINT32)*tilemap->num_tiles );
 		if( tilemap->cached_index_to_memory_offset ) return 0; /* no error */
-		free( tilemap->memory_offset_to_cached_index );
+		stack_free( tilemap->memory_offset_to_cached_index );
 	}
 	return -1; /* error */
 }
 
 static void mappings_dispose( struct tilemap *tilemap ){
-	free( tilemap->cached_index_to_memory_offset );
-	free( tilemap->memory_offset_to_cached_index );
+	stack_free( tilemap->cached_index_to_memory_offset );
+	stack_free( tilemap->memory_offset_to_cached_index );
 }
 
 static void mappings_update( struct tilemap *tilemap ){
@@ -315,18 +316,18 @@ static void memcpybitmask16( UINT16 *dest, const UINT32 *source, const UINT8 *bi
 
 static void mask_dispose( struct tilemap_mask *mask ){
 	if( mask ){
-		free( mask->data_row );
-		free( mask->data );
+		stack_free( mask->data_row );
+		stack_free( mask->data );
 		osd_free_bitmap( mask->bitmask );
-		free( mask );
+		stack_free( mask );
 	}
 }
 
 static struct tilemap_mask *mask_create( struct tilemap *tilemap ){
-	struct tilemap_mask *mask = (struct tilemap_mask *)malloc( sizeof(struct tilemap_mask) );
+	struct tilemap_mask *mask = (struct tilemap_mask *)stack_malloc( sizeof(struct tilemap_mask) );
 	if( mask ){
-		mask->data = (UINT8*)malloc( tilemap->num_tiles );
-		mask->data_row = (UINT8**)malloc( tilemap->num_cached_rows * sizeof(UINT8 *) );
+		mask->data = (UINT8*)stack_malloc( tilemap->num_tiles );
+		mask->data_row = (UINT8**)stack_malloc( tilemap->num_cached_rows * sizeof(UINT8 *) );
 		mask->bitmask = create_bitmask( tilemap->cached_width, tilemap->cached_height );
 		if( mask->data && mask->data_row && mask->bitmask ){
 			int row;
@@ -415,7 +416,7 @@ struct tilemap *tilemap_create(
 	int tile_width, int tile_height, /* in pixels */
 	int num_cols, int num_rows /* in tiles */
 ){
-	struct tilemap *tilemap = (struct tilemap *)calloc( 1,sizeof( struct tilemap ) );
+	struct tilemap *tilemap = (struct tilemap *)stack_calloc( 1,sizeof( struct tilemap ) );
 	if( tilemap ){
 		int num_tiles = num_cols*num_rows;
 		tilemap->num_logical_cols = num_cols;
@@ -440,14 +441,14 @@ struct tilemap *tilemap_create(
 		tilemap->scroll_rows = 1;
 		tilemap->scroll_cols = 1;
 		tilemap->transparent_pen = -1;
-		tilemap->cached_tile_info = (struct cached_tile_info*)calloc( num_tiles, sizeof(struct cached_tile_info) );
-		tilemap->priority = (UINT8*)calloc( num_tiles,1 );
-		tilemap->visible = (UINT8*)calloc( num_tiles,1 );
-		tilemap->dirty_vram = (UINT8*)malloc( num_tiles );
-		tilemap->dirty_pixels = (UINT8*)malloc( num_tiles );
-		tilemap->rowscroll = (int*)calloc(tilemap->cached_height,sizeof(int));
-		tilemap->colscroll = (int*)calloc(tilemap->cached_width,sizeof(int));
-		tilemap->priority_row = (UINT8**)malloc( sizeof(UINT8 *)*num_rows );
+		tilemap->cached_tile_info = (struct cached_tile_info*)stack_calloc( num_tiles, sizeof(struct cached_tile_info) );
+		tilemap->priority = (UINT8*)stack_calloc( num_tiles,1 );
+		tilemap->visible = (UINT8*)stack_calloc( num_tiles,1 );
+		tilemap->dirty_vram = (UINT8*)stack_malloc( num_tiles );
+		tilemap->dirty_pixels = (UINT8*)stack_malloc( num_tiles );
+		tilemap->rowscroll = (int*)stack_calloc(tilemap->cached_height,sizeof(int));
+		tilemap->colscroll = (int*)stack_calloc(tilemap->cached_width,sizeof(int));
+		tilemap->priority_row = (UINT8**)stack_malloc( sizeof(UINT8 *)*num_rows );
 		tilemap->pixmap = create_tmpbitmap( tilemap->cached_width, tilemap->cached_height, Machine->scrbitmap->depth );
 		tilemap->foreground = mask_create( tilemap );
 		tilemap->background = (type & TILEMAP_SPLIT)?mask_create( tilemap ):NULL;
@@ -489,19 +490,19 @@ void tilemap_dispose( struct tilemap *tilemap ){
 		prev->next =tilemap->next;
 	}
 
-	free( tilemap->cached_tile_info );
-	free( tilemap->priority );
-	free( tilemap->visible );
-	free( tilemap->dirty_vram );
-	free( tilemap->dirty_pixels );
-	free( tilemap->rowscroll );
-	free( tilemap->colscroll );
-	free( tilemap->priority_row );
+	stack_free( tilemap->cached_tile_info );
+	stack_free( tilemap->priority );
+	stack_free( tilemap->visible );
+	stack_free( tilemap->dirty_vram );
+	stack_free( tilemap->dirty_pixels );
+	stack_free( tilemap->rowscroll );
+	stack_free( tilemap->colscroll );
+	stack_free( tilemap->priority_row );
 	osd_free_bitmap( tilemap->pixmap );
 	mask_dispose( tilemap->foreground );
 	mask_dispose( tilemap->background );
 	mappings_dispose( tilemap );
-	free( tilemap );
+	stack_free( tilemap );
 }
 
 /***********************************************************************************/
