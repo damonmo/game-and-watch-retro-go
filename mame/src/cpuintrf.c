@@ -13,6 +13,7 @@
 #include "timer.h"
 #include "state.h"
 #include "hiscore.h"
+#include "stack_malloc.c"
 
 #ifdef WANT_LIBCO
 extern int libco_quit;
@@ -650,7 +651,7 @@ logerror("CPU #%d claims to need no context buffer!\n", i);
 			/*raise( SIGABRT );*/
 		}
 
-		cpu[i].context = malloc( size );
+		cpu[i].context = stack_malloc( size );
 		if( cpu[i].context == NULL )
 		{
 			/* That's really bad :( */
@@ -855,7 +856,7 @@ logerror("Machine reset\n");
 		/* free the context buffer for that CPU */
 		if( cpu[i].context )
 		{
-			free( cpu[i].context );
+			stack_free( cpu[i].context );
 			cpu[i].context = NULL;
 		}
 	}
