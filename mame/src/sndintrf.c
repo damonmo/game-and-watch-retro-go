@@ -892,7 +892,7 @@ void sound_stop(void)
 
 
 
-void sound_update(void)
+void mame_sound_update(void)
 {
 	int totalsound = 0;
 
