@@ -485,7 +485,7 @@ $(BUILD_DIR)/gw/%.o: %.c Makefile Makefile.common $(SDK_HEADERS) $(BUILD_DIR)/co
 
 $(BUILD_DIR)/mame/%.o: %.c Makefile Makefile.common $(SDK_HEADERS) $(BUILD_DIR)/config.h | $(BUILD_DIR)
 	$(V)$(ECHO) [ CC mame ] $(notdir $<)
-	$(V)$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/mame/$(notdir $(<:.c=.lst)) $< -o $@
+	$(V)$(CC) -c $(CFLAGS) -DHAS_M6502=1 -DHAS_POKEY=1 -Wa,-a,-ad,-alms=$(BUILD_DIR)/mame/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR):
 	$(V)mkdir $@
