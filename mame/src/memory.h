@@ -413,7 +413,7 @@ extern mem_write_handler memorywritehandler[MH_HARDMAX];
 extern int memorywriteoffset[MH_HARDMAX];
 
 #ifdef MAME_MEMINLINE
-INLINE WRITE_HANDLER(cpu_writemem16);
+INLINE WRITE_HANDLER(mame_cpu_writemem16);
 INLINE WRITE_HANDLER(cpu_writemem16bew);
 INLINE WRITE_HANDLER(cpu_writemem16bew_word);
 INLINE WRITE_HANDLER(cpu_writemem16lew);
@@ -438,7 +438,7 @@ INLINE WRITE_HANDLER(cpu_writemem32lew_word);
 INLINE WRITE_HANDLER(cpu_writemem32lew_dword);
 #include "memory_write.h"
 #else
-WRITE_HANDLER(cpu_writemem16);
+WRITE_HANDLER(mame_cpu_writemem16);
 WRITE_HANDLER(cpu_writemem16bew);
 WRITE_HANDLER(cpu_writemem16bew_word);
 WRITE_HANDLER(cpu_writemem16lew);

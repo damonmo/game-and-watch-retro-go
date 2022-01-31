@@ -180,11 +180,11 @@ void name##_dword(offs_t address,data_t data)											\
 
 
 /* the handlers we need to generate */
-//WRITEBYTE(cpu_writemem16,	 TYPE_8BIT, 	16)
+//WRITEBYTE(mame_cpu_writemem16,	 TYPE_8BIT, 	16)
 #ifdef MAME_MEMINLINE
 INLINE
 #endif
-void cpu_writemem16(offs_t address,data_t data)
+void mame_cpu_writemem16(offs_t address,data_t data)
 {
 	MHELE hw;
 

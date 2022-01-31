@@ -98,11 +98,11 @@ extern	UINT8	*RAM;
 #if FAST_MEMORY
 #define WRMEM(addr,data)										\
 	if (cur_mwhard[(addr) >> (ABITS2_16 + ABITS_MIN_16)])		\
-		cpu_writemem16(addr,data);								\
+		mame_cpu_writemem16(addr,data);								\
 	else														\
 		RAM[addr] = data
 #else
-#define WRMEM(addr,data) cpu_writemem16(addr,data)
+#define WRMEM(addr,data) mame_cpu_writemem16(addr,data)
 #endif
 
 /***************************************************************
