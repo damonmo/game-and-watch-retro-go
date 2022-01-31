@@ -1,3 +1,4 @@
+/*
 #ifdef WANT_LIBCO
 #include <libco.h>
 #else
@@ -7,6 +8,7 @@
 #if (HAS_DRZ80 || HAS_CYCLONE)
 #include "frontend_list.h"
 #endif
+*/
 
 #include <stdarg.h>
 #include <sys/time.h>
@@ -16,7 +18,7 @@
 #include "osdepend.h"
 #include "driver.h"
 #include "allegro.h"
-#include <file/file_path.h>
+//#include <file/file_path.h>
 #include "stack_malloc.h"
 
 #ifndef RETROK_TILDE
@@ -42,6 +44,7 @@ unsigned retro_hook_quit;
 volatile static unsigned audio_done;
 volatile static unsigned video_done;
 volatile static unsigned mame_sleep;
+/*
 #ifdef WANT_LIBCO
 int libco_quit=0;
 static cothread_t core_thread;
@@ -51,7 +54,7 @@ static sthread_t *run_thread = NULL;
 static scond_t   *libretro_cond = NULL;
 static slock_t   *libretro_mutex = NULL;
 #endif
-
+*/
 unsigned frameskip_type                  = 0;
 unsigned frameskip_threshold             = 0;
 unsigned frameskip_counter               = 0;
@@ -144,7 +147,7 @@ unsigned long gp2x_joystick_read(int n)
    (void)n;
 }
 
-int osd_init(void)
+int mame_osd_init(void)
 {
    return 0;
 }
@@ -525,29 +528,29 @@ static void hook_check(void)
 {
    if (video_done && audio_done)
    {
-      scond_signal(libretro_cond);
-      if (mame_sleep && !retro_hook_quit)
-         scond_wait(libretro_cond, libretro_mutex);
+      //scond_signal(libretro_cond);
+      //if (mame_sleep && !retro_hook_quit)
+      //   scond_wait(libretro_cond, libretro_mutex);
       mame_sleep = 1;
    }
 }
 
 void hook_audio_done(void)
 {
-   slock_lock(libretro_mutex);
+   //slock_lock(libretro_mutex);
    audio_done = 1;
    hook_check();
-   slock_unlock(libretro_mutex);
+   //slock_unlock(libretro_mutex);
 }
 
 void hook_video_done(void)
 {
-   slock_lock(libretro_mutex);
+   //slock_lock(libretro_mutex);
    if (video_done) // Audio doesn't seem to be running atm, so fake it ...
       audio_done = 1;
    video_done = 1;
    hook_check();
-   slock_unlock(libretro_mutex);
+   //slock_unlock(libretro_mutex);
 }
 
 #ifdef WANT_LIBCO
@@ -574,18 +577,18 @@ void run_thread_proc(void *v)
 
 static void lock_mame(void)
 {
-   slock_lock(libretro_mutex);
-   while (!audio_done || !video_done)
-      scond_wait(libretro_cond, libretro_mutex);
-   slock_unlock(libretro_mutex);
+   //slock_lock(libretro_mutex);
+   //while (!audio_done || !video_done)
+   //   scond_wait(libretro_cond, libretro_mutex);
+   //slock_unlock(libretro_mutex);
 }
 
 static void unlock_mame(void)
 {
-   slock_lock(libretro_mutex);
+   //slock_lock(libretro_mutex);
    mame_sleep = 0;
-   scond_signal(libretro_cond);
-   slock_unlock(libretro_mutex);
+   //scond_signal(libretro_cond);
+   //slock_unlock(libretro_mutex);
 }
 #endif
 
@@ -597,8 +600,8 @@ void retro_init(void)
    gp2x_screen15 = (unsigned short *) stack_malloc(640 * 480 * 2);
 #endif
 #ifndef WANT_LIBCO
-   libretro_cond  = scond_new();
-   libretro_mutex = slock_new();
+   //libretro_cond  = scond_new();
+   //libretro_mutex = slock_new();
 #endif
    init_joy_list();
    update_variables(true);
@@ -617,8 +620,8 @@ void retro_deinit(void)
    stack_free(gp2x_screen15);
 #endif
 #ifndef WANT_LIBCO
-   scond_free(libretro_cond);
-   slock_free(libretro_mutex);
+   //scond_free(libretro_cond);
+   //slock_free(libretro_mutex);
 #endif
 
    libretro_supports_bitmasks = false;
@@ -1044,7 +1047,7 @@ bool retro_load_game(const struct retro_game_info *info)
    core_thread = co_create(0x10000, run_thread_proc);
    co_switch(core_thread);
 #else
-   run_thread = sthread_create(run_thread_proc, NULL);
+   //run_thread = sthread_create(run_thread_proc, NULL);
 #endif
 
    retro_set_audio_buff_status_cb();
@@ -1062,18 +1065,18 @@ if(libco_quit==0){
 else printf("esc pressed quit!\n");
    co_delete(core_thread);
 #else
-   slock_lock(libretro_mutex);
+   //slock_lock(libretro_mutex);
    // make sure we escape the copyright warning and game warning loops
    key[KEY_ESC] = 1;
    retro_hook_quit = 1;
    mame_sleep = 0;
-   scond_signal(libretro_cond);
-   slock_unlock(libretro_mutex);
+   //scond_signal(libretro_cond);
+   //slock_unlock(libretro_mutex);
 
-   if (run_thread)
+   /*if (run_thread)
       sthread_join(run_thread);
 
-   run_thread      = NULL;
+   run_thread      = NULL;*/
    retro_hook_quit = 0;
 #endif
 }
