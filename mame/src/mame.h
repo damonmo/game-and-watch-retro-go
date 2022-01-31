@@ -39,7 +39,7 @@ struct RunningMachine
 	int color_depth;	/* video color depth: 8 or 16 */
 	int sample_rate;	/* the digital audio sample rate; 0 if sound is disabled. */
 						/* This is set to a default value, or a value specified by */
-						/* the user; osd_init() is allowed to change it to the actual */
+						/* the user; mame_osd_init() is allowed to change it to the actual */
 						/* sample rate supported by the audio card. */
 	int obsolete;	// was sample_bits;	/* 8 or 16 */
 	struct GameSamples *samples;	/* samples loaded from disk */

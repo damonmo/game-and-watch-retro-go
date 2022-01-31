@@ -18,7 +18,7 @@
 #endif
 
 
-int osd_init(void);
+int mame_osd_init(void);
 void osd_exit(void);
 
 

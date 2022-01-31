@@ -152,7 +152,7 @@ int run_game(int game)
 		return err;
 	#endif
 
-	if (osd_init() == 0)
+	if (mame_osd_init() == 0)
 	{
 		if (init_machine() == 0)
 		{
