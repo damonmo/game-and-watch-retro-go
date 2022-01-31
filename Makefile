@@ -150,6 +150,7 @@ MAME_C_SOURCES = \
 mame/src/cpu/m6502/m6502.c \
 mame/src/drivers/mame_src_drivers_atetris.c \
 mame/src/mame_src_common.c \
+mame/src/artwork.c \
 mame/src/cpuintrf.c \
 mame/src/datafile.c \
 mame/src/drawgfx.c \
