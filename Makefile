@@ -149,6 +149,7 @@ Core/Src/porting/gw/main_gw.c
 MAME_C_SOURCES = \
 mame/src/cpu/m6502/m6502.c \
 mame/src/drivers/mame_src_drivers_atetris.c \
+mame/src/vidhrdw/generic.c \
 mame/src/mame_src_common.c \
 mame/src/artwork.c \
 mame/src/cpuintrf.c \
