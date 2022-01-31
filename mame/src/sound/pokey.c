@@ -38,7 +38,7 @@
  *****************************************************************************/
 
 #include "driver.h"
-#include "stack_malloc.c"
+#include "stack_malloc.h"
 
 /*
  * Defining this produces much more (about twice as much)

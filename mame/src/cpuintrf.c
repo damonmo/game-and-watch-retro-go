@@ -13,7 +13,7 @@
 #include "timer.h"
 #include "state.h"
 #include "hiscore.h"
-#include "stack_malloc.c"
+#include "stack_malloc.h"
 
 #ifdef WANT_LIBCO
 extern int libco_quit;

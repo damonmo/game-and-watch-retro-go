@@ -4,7 +4,7 @@
 
 #include "driver.h"
 #include "hiscore.h"
-#include "stack_malloc.c"
+#include "stack_malloc.h"
 
 #define MAX_CONFIG_LINE_SIZE 48
 
