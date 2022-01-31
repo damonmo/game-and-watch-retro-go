@@ -147,6 +147,40 @@ LCD-Game-Emulator/src/gw_sys/gw_system.c \
 Core/Src/porting/gw/main_gw.c
 
 MAME_C_SOURCES = \
+mame/src/cpu/m6502/m6502.c \
+mame/src/drivers/mame_src_drivers_atetris.c \
+mame/src/mame_src_common.c \
+mame/src/cpuintrf.c \
+mame/src/datafile.c \
+mame/src/drawgfx.c \
+mame/src/driver.c \
+mame/src/gfxobj.c \
+mame/src/hiscore.c \
+mame/src/inptport.c \
+mame/src/mame_src_input.c \
+mame/src/mame.c \
+mame/src/memory.c \
+mame/src/palette.c \
+mame/src/profiler.c \
+mame/src/sndintrf.c \
+mame/src/sprite.c \
+mame/src/mame_src_state.c \
+mame/src/tilemap.c \
+mame/src/timer.c \
+mame/src/ui_text.c \
+mame/src/usrintrf.c \
+mame/src/sound/pokey.c \
+mame/src/sound/mixer.c \
+mame/src/sound/streams.c \
+mame/src/libretro/libretro.c \
+mame/src/libretro/fileio.c \
+mame/src/libretro/video.c \
+mame/src/libretro/mame_src_libretro_sound.c \
+mame/src/libretro/blit.c \
+mame/src/libretro/config.c \
+mame/src/libretro/mame_src_libretro_input.c \
+mame/src/libretro/shared.c \
+Core/Src/porting/mame/stack_malloc.c \
 Core/Src/porting/mame/main_mame.c
 
 C_INCLUDES +=  \
@@ -165,7 +199,10 @@ C_INCLUDES +=  \
 -Iretro-go-stm32/huexpress-go/components/huexpress/engine \
 -ILCD-Game-Emulator/src \
 -ILCD-Game-Emulator/src/cpus \
--ILCD-Game-Emulator/src/gw_sys
+-ILCD-Game-Emulator/src/gw_sys \
+-Imame/src \
+-Imame/src/libretro \
+-Imame/src/libretro/libretro-common/include
 
 include Makefile.common
 
