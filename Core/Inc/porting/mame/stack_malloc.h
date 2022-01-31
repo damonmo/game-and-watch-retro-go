@@ -1,5 +1,5 @@
-unsigned char STACK_MALLOC_BUFFER[1024 * 1024];
-unsigned int STACK_MALLOC_INDEX;
+extern unsigned char STACK_MALLOC_BUFFER[1024 * 1024];
+extern unsigned int STACK_MALLOC_INDEX;
 
 #define stack_malloc(sz) _stack_malloc(sz, __FILE__, __FUNCTION__)
 void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_function);
