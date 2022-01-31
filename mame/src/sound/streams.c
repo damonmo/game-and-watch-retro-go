@@ -251,7 +251,7 @@ int stream_init_multi(int channels,const char **names,const int *default_mixing_
 
 
 /* min_interval is in usec */
-void stream_update(int channel,int min_interval)
+void mame_stream_update(int channel,int min_interval)
 {
 	int newpos;
 	int buflen;

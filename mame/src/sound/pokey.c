@@ -539,7 +539,7 @@ void pokey_sh_update(void)
 	int chip;
 
 	for( chip = 0; chip < intf.num; chip++ )
-		stream_update(pokey[chip].channel, 0);
+		mame_stream_update(pokey[chip].channel, 0);
 }
 
 static void poly_init(UINT8 *poly, int size, int left, int right, int add)
@@ -960,11 +960,11 @@ void pokey_register_w(int chip, int offs, int data)
 	int ch_mask = 0, new_val;
 
 #ifndef MAME_FASTSOUND
-	stream_update(p->channel, 0);
+	mame_stream_update(p->channel, 0);
 #else
     {
         extern int fast_sound;
-        if (!fast_sound) stream_update(p->channel, 0);
+        if (!fast_sound) mame_stream_update(p->channel, 0);
     }
 #endif
     /* determine which address was changed */
