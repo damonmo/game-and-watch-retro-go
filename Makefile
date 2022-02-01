@@ -157,7 +157,6 @@ mame/src/datafile.c \
 mame/src/drawgfx.c \
 mame/src/driver.c \
 mame/src/gfxobj.c \
-mame/src/hiscore.c \
 mame/src/inptport.c \
 mame/src/mame_src_input.c \
 mame/src/mame.c \
