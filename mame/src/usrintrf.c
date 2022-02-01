@@ -23,7 +23,6 @@ extern int mame_debug;
 extern int bitmap_dirty;	/* set by osd_clearbitmap() */
 
 /* Variables for stat menu */
-extern char build_version[];
 extern unsigned int dispensed_tickets;
 extern unsigned int coins[COIN_COUNTERS];
 extern unsigned int coinlockedout[COIN_COUNTERS];
@@ -2185,7 +2184,6 @@ static int displaygameinfo(struct osd_bitmap *bitmap,int selected)
 		sprintf (buf2, "\n\t%s ", ui_getstring (UI_mame));	/* \t means that the line will be centered */
 		strcat(buf, buf2);
 
-		strcat(buf,build_version);
 		sprintf (buf2, "\n\t%s", ui_getstring (UI_anykey));
 		strcat(buf,buf2);
 		ui_drawbox(bitmap,0,0,Machine->uiwidth,Machine->uiheight);
@@ -3178,23 +3176,6 @@ static void onscrd_gamma(struct osd_bitmap *bitmap,int increment,int arg)
 
 static void onscrd_vector_intensity(struct osd_bitmap *bitmap,int increment,int arg)
 {
-	char buf[30];
-	float intensity_correction;
-
-	if (increment)
-	{
-		intensity_correction = vector_get_intensity();
-
-		intensity_correction += 0.05 * increment;
-		if (intensity_correction < 0.5) intensity_correction = 0.5;
-		if (intensity_correction > 3.0) intensity_correction = 3.0;
-
-		vector_set_intensity(intensity_correction);
-	}
-	intensity_correction = vector_get_intensity();
-
-	sprintf(buf,"%s %1.2f", ui_getstring (UI_vectorintensity), intensity_correction);
-	displayosd(bitmap,buf,100*(intensity_correction-0.5)/(3.0-0.5),100*(1.5-0.5)/(3.0-0.5));
 }
 
 
