@@ -11,11 +11,11 @@ TODO:	remove the 1 analog device per port limitation
 ***************************************************************************/
 
 #include "driver.h"
+#include "stack_malloc.h"
 #include <math.h>
 
 #ifdef MAME_NET
 #include "network.h"
-#include "stack_malloc.h"
 
 static unsigned short input_port_defaults[MAX_INPUT_PORTS];
 static int default_player;
