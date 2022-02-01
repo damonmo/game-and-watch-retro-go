@@ -603,14 +603,53 @@ void palette_init_used_colors(void)
 
 
 
-static unsigned char rgb6_to_pen[64][64][64];
+static unsigned char pen_to_rgb6[DYNAMIC_MAX_PENS][4];
+static unsigned char pen_to_rgb6_nelems = 0;
+
+static void set_rgb6_to_pen(int rr, int gg, int bb, unsigned char pen)
+{
+	int i;
+	for (i=0;i<pen_to_rgb6_nelems;i++)
+	{
+		if ((pen_to_rgb6[i][0] == rr) &&
+				(pen_to_rgb6[i][1] == gg) &&
+				(pen_to_rgb6[i][2] == bb))
+		{
+			pen_to_rgb6[i][0] = rr;
+			pen_to_rgb6[i][1] = gg;
+			pen_to_rgb6[i][2] = bb;
+			pen_to_rgb6[i][3] = pen;
+			return;
+		}
+	}
+	pen_to_rgb6[pen_to_rgb6_nelems][0] = rr;
+	pen_to_rgb6[pen_to_rgb6_nelems][1] = gg;
+	pen_to_rgb6[pen_to_rgb6_nelems][2] = bb;
+	pen_to_rgb6[pen_to_rgb6_nelems][3] = pen;
+	pen_to_rgb6_nelems++;
+	return;
+}
+
+static unsigned char get_rgb6_to_pen(int rr, int gg, int bb)
+{
+	int i;
+	for (i=0;i<pen_to_rgb6_nelems;i++)
+	{
+		if ((pen_to_rgb6[i][0] == rr) &&
+				(pen_to_rgb6[i][1] == gg) &&
+				(pen_to_rgb6[i][2] == bb))
+		{
+			return pen_to_rgb6[i][3];
+		}
+	}
+	return DYNAMIC_MAX_PENS;
+}
 
 static void build_rgb_to_pen(void)
 {
 	int i,rr,gg,bb;
 
-	memset(rgb6_to_pen,DYNAMIC_MAX_PENS,sizeof(rgb6_to_pen));
-	rgb6_to_pen[0][0][0] = BLACK_PEN;
+	set_rgb6_to_pen(0, 0, 0, BLACK_PEN);
 
 	for (i = 0;i < DYNAMIC_MAX_PENS;i++)
 	{
@@ -620,11 +659,11 @@ static void build_rgb_to_pen(void)
 			gg = shrinked_palette[3*i + 1] >> 2;
 			bb = shrinked_palette[3*i + 2] >> 2;
 
-			if (rgb6_to_pen[rr][gg][bb] == DYNAMIC_MAX_PENS)
+			if (get_rgb6_to_pen(rr,gg,bb) == DYNAMIC_MAX_PENS)
 			{
 				int j,max;
 
-				rgb6_to_pen[rr][gg][bb] = i;
+				set_rgb6_to_pen(rr,gg,bb,i);
 				max = pen_usage_count[i];
 
 				/* to reduce flickering during remaps, find the pen used by most colors */
@@ -635,7 +674,7 @@ static void build_rgb_to_pen(void)
 							gg == (shrinked_palette[3*j + 1] >> 2) &&
 							bb == (shrinked_palette[3*j + 2] >> 2))
 					{
-						rgb6_to_pen[rr][gg][bb] = j;
+						set_rgb6_to_pen(rr,gg,bb,j);
 						max = pen_usage_count[j];
 					}
 				}
@@ -663,7 +702,7 @@ static int compress_palette(void)
 			g = game_palette[3*i + 1] >> 2;
 			b = game_palette[3*i + 2] >> 2;
 
-			j = rgb6_to_pen[r][g][b];
+			j = get_rgb6_to_pen(r,g,b);
 
 			if (palette_map[i] != j)
 			{
@@ -988,7 +1027,7 @@ logerror("Need %d new pens; %d available. I'll reuse some pens.\n",need,avail);
 			{
 				if (reuse_pens)
 				{
-					i = rgb6_to_pen[r >> 2][g >> 2][b >> 2];
+					i = get_rgb6_to_pen(r >> 2,g >> 2,b >> 2);
 					if (i != DYNAMIC_MAX_PENS)
 					{
 						if (palette_map[color] != i)
@@ -1073,8 +1112,8 @@ retry:
 						rr = shrinked_palette[3*i + 0] >> 2;
 						gg = shrinked_palette[3*i + 1] >> 2;
 						bb = shrinked_palette[3*i + 2] >> 2;
-						if (rgb6_to_pen[rr][gg][bb] == i)
-							rgb6_to_pen[rr][gg][bb] = DYNAMIC_MAX_PENS;
+						if (get_rgb6_to_pen(rr,gg,bb) == i)
+							set_rgb6_to_pen(rr,gg,bb,DYNAMIC_MAX_PENS);
 
 						shrinked_palette[3*i + 0] = r;
 						shrinked_palette[3*i + 1] = g;
@@ -1084,8 +1123,8 @@ retry:
 						r >>= 2;
 						g >>= 2;
 						b >>= 2;
-						if (rgb6_to_pen[r][g][b] == DYNAMIC_MAX_PENS)
-							rgb6_to_pen[r][g][b] = i;
+						if (get_rgb6_to_pen(r,g,b) == DYNAMIC_MAX_PENS)
+							set_rgb6_to_pen(r,g,b,i);
 					}
 
 					old_used_colors[color] = palette_used_colors[color];

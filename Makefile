@@ -162,14 +162,11 @@ mame/src/mame_src_input.c \
 mame/src/mame.c \
 mame/src/memory.c \
 mame/src/palette.c \
-mame/src/profiler.c \
 mame/src/sndintrf.c \
 mame/src/sprite.c \
 mame/src/mame_src_state.c \
 mame/src/tilemap.c \
 mame/src/timer.c \
-mame/src/ui_text.c \
-mame/src/usrintrf.c \
 mame/src/sound/pokey.c \
 mame/src/sound/mixer.c \
 mame/src/sound/streams.c \

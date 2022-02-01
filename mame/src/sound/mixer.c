@@ -74,7 +74,7 @@ static UINT16 is_stereo;
 /* 32-bit accumulators */
 static UINT32 accum_base;
 static INT32 left_accum[ACCUMULATOR_SAMPLES];
-static INT32 right_accum[ACCUMULATOR_SAMPLES];
+static INT32 *right_accum;
 
 /* 16-bit mix buffers */
 static INT16 mix_buffer[ACCUMULATOR_SAMPLES*2];	/* *2 for stereo */
@@ -114,7 +114,9 @@ int mixer_sh_start(void)
 	/* FRANXIS 28-01-2008 */
 	{
 		extern int usestereo;
-		is_stereo = (((Machine->drv->sound_attributes & SOUND_SUPPORTS_STEREO) != 0) && (usestereo!=0));
+		//is_stereo = (((Machine->drv->sound_attributes & SOUND_SUPPORTS_STEREO) != 0) && (usestereo!=0));
+		/* Game & Watch is mono */
+		is_stereo = 0;
 	}
 
 	/* clear the accumulators */
