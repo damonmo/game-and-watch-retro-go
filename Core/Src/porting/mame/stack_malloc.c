@@ -4,7 +4,7 @@
 #include "stack_malloc.h"
 
 unsigned int STACK_MALLOC_INDEX;
-unsigned char STACK_MALLOC_BUFFER[400 * 1024];
+unsigned char STACK_MALLOC_BUFFER[350 * 1024];
 
 void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_function)
 {
