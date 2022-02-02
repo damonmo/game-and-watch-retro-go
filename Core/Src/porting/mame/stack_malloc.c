@@ -4,7 +4,13 @@
 #include "stack_malloc.h"
 
 unsigned int STACK_MALLOC_INDEX;
-unsigned char STACK_MALLOC_BUFFER[350 * 1024];
+unsigned char STACK_MALLOC_BUFFER[5 * 1024 * 1024];
+
+void stack_malloc_init(void)
+{
+    STACK_MALLOC_INDEX = 0;
+    memset(STACK_MALLOC_BUFFER, 0, sizeof(STACK_MALLOC_BUFFER));
+}
 
 void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_function)
 {
@@ -32,4 +38,5 @@ void *stack_calloc(size_t nitems, size_t sz)
 
 void stack_free(void *ptr)
 {
+    printf("stack_free %04x\n", ptr);
 }
