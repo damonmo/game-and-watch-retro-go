@@ -122,7 +122,7 @@ int mixer_sh_start(void)
 	/* clear the accumulators */
 	accum_base = 0;
 	memset(left_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
-	memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
+	//memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
 
 	samples_this_frame = osd_start_audio_stream(is_stereo);
 
