@@ -46,6 +46,7 @@ void blitscreen_dirty0_color16(struct osd_bitmap *bitmap);
 void blitscreen_dirty0_palettized16(struct osd_bitmap *bitmap);
 
 static void update_screen_dummy(struct osd_bitmap *bitmap);
+static void update_screen_test(struct osd_bitmap *bitmap);
 void (*update_screen)(struct osd_bitmap *bitmap) = update_screen_dummy;
 
 static int video_depth,video_fps;
@@ -761,6 +762,10 @@ static void update_screen_dummy(struct osd_bitmap *bitmap)
 	logerror("msdos/video.c: undefined update_screen() function for %d x %d!\n",xmultiply,ymultiply);
 }
 
+static void update_screen_test(struct osd_bitmap *bitmap)
+{
+}
+
 static INLINE void pan_display(void)
 {
 	int pan_changed = 0;
@@ -895,6 +900,7 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 	}
 
 		/* copy the bitmap to screen memory */
+		update_screen = update_screen_test;
 		update_screen(bitmap);
 
 		if (have_to_clear_bitmap)
