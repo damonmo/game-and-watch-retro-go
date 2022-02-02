@@ -25,9 +25,6 @@ extern int soundcard, usestereo, attenuation;
 /* from input.c */
 extern int use_mouse, joystick;
 
-/* from cheat.c */
-extern char *cheatfile;
-
 /* from datafile.c */
 extern char *history_filename,*mameinfo_filename;
 
@@ -300,8 +297,6 @@ void parse_cmdline (int argc, char **argv, int game_index)
 	options.cheat      = get_bool ("config", "cheat", NULL, 0);
 	options.mame_debug = get_bool ("config", "debug", NULL, 0);
 
-	cheatfile  = get_string ("config", "cheatfile", "cf", "cheat.dat");
-
  	history_filename  = get_string ("config", "historyfile", NULL, "history.dat");    /* JCK 980917 */
 
 	mameinfo_filename  = get_string ("config", "mameinfofile", NULL, "mameinfo.dat");    /* JCK 980917 */
@@ -319,7 +314,6 @@ void parse_cmdline (int argc, char **argv, int game_index)
 	artworkdir = get_string ("directory", "artwork", NULL, IMAMEBASEPATH);
 	cheatdir = get_string ("directory", "cheat", NULL, IMAMEBASEPATH);
 
-	logerror("cheatfile = %s - cheatdir = %s\n",cheatfile,cheatdir);
 
 	//printf("cheatfile = %s - cheatdir = %s\n",cheatfile,cheatdir);
 	//printf("cfgdir = %s\n",cfgdir);
