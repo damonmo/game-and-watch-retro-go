@@ -631,11 +631,12 @@ int run_machine(void)
 					/* so show the disclaimer. */
 					if (!options.skip_disclaimer)
 					{
-						if (showcopyright(real_scrbitmap)) goto userquit;
+						//if (showcopyright(real_scrbitmap)) goto userquit;
 					}
 				}
 
-				if (showgamewarnings(real_scrbitmap) == 0)  /* show info about incorrect behaviour (wrong colors etc.) */
+				//if (showgamewarnings(real_scrbitmap) == 0)  /* show info about incorrect behaviour (wrong colors etc.) */
+				if (1)  /* show info about incorrect behaviour (wrong colors etc.) */
 				{
 					/* shut down the leds (work around Allegro hanging bug in the DOS port) */
 					osd_led_w(0,1);
@@ -722,17 +723,5 @@ userquit:
 
 int mame_highscore_enabled(void)
 {
-	/* disable high score when record/playback is on */
-	if (record != 0 || playback != 0) return 0;
-
-	/* disable high score when cheats are used */
-	if (he_did_cheat != 0) return 0;
-
-#ifdef MAME_NET
-    /* disable high score when playing network game */
-    /* (this forces all networked machines to start from the same state!) */
-    if (net_active()) return 0;
-#endif /* MAME_NET */
-
-	return 1;
+	return 0;
 }
