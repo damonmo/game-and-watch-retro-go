@@ -649,11 +649,7 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 void retro_get_system_info(struct retro_system_info *info)
 {
    info->library_name     = "MAME 2000";
-#ifdef GIT_VERSION
-   info->library_version  = "0.37b5" GIT_VERSION;
-#else
-   info->library_version  = build_version;
-#endif
+   info->library_version  = "0.37b5";
    info->need_fullpath    = true;
    info->valid_extensions = "zip|ZIP";
    info->block_extract    = true;
@@ -812,7 +808,6 @@ bool retro_load_game(const struct retro_game_info *info)
    }
 
   retro_content_directory = strdup(info->path);
-  path_basedir(retro_content_directory);
 
   printf("CONTENT_DIRECTORY: %s\n", retro_content_directory);
 
