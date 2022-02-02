@@ -158,6 +158,11 @@ int osd_fread_swap (void *file, void *buffer, int length)
 	return res;
 }
 
+void* osd_fdata (void *file)
+{
+    FakeFileHandle *f = (FakeFileHandle *) file;
+    return f->data;
+}
 
 int osd_fwrite (void *file, const void *buffer, int length)
 {

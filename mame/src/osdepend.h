@@ -287,6 +287,7 @@ enum
 int osd_faccess(const char *filename, int filetype);
 void *osd_fopen(const char *gamename,const char *filename,int filetype,int read_or_write);
 int osd_fread(void *file,void *buffer,int length);
+void* osd_fdata(void *file);
 int osd_fwrite(void *file,const void *buffer,int length);
 int osd_fread_swap(void *file,void *buffer,int length);
 int osd_fwrite_swap(void *file,const void *buffer,int length);
