@@ -579,25 +579,32 @@ int pokey_sh_start(const struct MachineSound *msound)
 
 	memcpy(&intf, msound->sound_interface, sizeof(struct POKEYinterface));
 
+	/* gw: audio disabled for now
 	poly9 = (UINT8*)stack_malloc(0x1ff+1);
 	rand9 = (UINT8*)stack_malloc(0x1ff+1);
-    poly17 = (UINT8*)stack_malloc(0x1ffff+1);
-    rand17 = (UINT8*)stack_malloc(0x1ffff+1);
+	poly17 = (UINT8*)stack_malloc(0x1ffff+1);
+	rand17 = (UINT8*)stack_malloc(0x1ffff+1);
+	*/
+	poly9 = (UINT8*)stack_malloc(1);
+	rand9 = (UINT8*)stack_malloc(1);
+	poly17 = (UINT8*)stack_malloc(1);
+	rand17 = (UINT8*)stack_malloc(1);
 	if( !poly9 || !rand9 || !poly17 || !rand17 )
 	{
 		pokey_sh_stop();	/* free any allocated memory again */
 		return 1;
 	}
 
+	//gw: audio disabled for now
 	/* initialize the poly counters */
-	poly_init(poly4,   4, 3, 1, 0x00004);
-	poly_init(poly5,   5, 3, 2, 0x00008);
-	poly_init(poly9,   9, 2, 7, 0x00080);
-	poly_init(poly17, 17, 7,10, 0x18000);
+	//poly_init(poly4,   4, 3, 1, 0x00004);
+	//poly_init(poly5,   5, 3, 2, 0x00008);
+	//poly_init(poly9,   9, 2, 7, 0x00080);
+	//poly_init(poly17, 17, 7,10, 0x18000);
 
 	/* initialize the random arrays */
-	rand_init(rand9,   9, 2, 7, 0x00080);
-	rand_init(rand17, 17, 7,10, 0x18000);
+	//rand_init(rand9,   9, 2, 7, 0x00080);
+	//rand_init(rand17, 17, 7,10, 0x18000);
 
 	for( chip = 0; chip < intf.num; chip++ )
 	{
@@ -630,7 +637,8 @@ int pokey_sh_start(const struct MachineSound *msound)
 		p->interrupt_cb = intf.interrupt_cb[chip];
 
 		sprintf(name, "Pokey #%d", chip);
-		p->channel = stream_init(name, intf.mixing_level[chip], Machine->sample_rate, chip, update[chip]);
+		// gw: audio disabled for now
+		//p->channel = stream_init(name, intf.mixing_level[chip], Machine->sample_rate, chip, update[chip]);
 
 		if( p->channel == -1 )
 		{
