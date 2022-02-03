@@ -164,6 +164,8 @@ mame/src/memory.c \
 mame/src/palette.c \
 mame/src/sndintrf.c \
 mame/src/sprite.c \
+mame/src/usrintrf.c \
+mame/src/ui_text.c \
 mame/src/mame_src_state.c \
 mame/src/tilemap.c \
 mame/src/timer.c \

@@ -24,6 +24,7 @@ void profiler_stop(void){}
 void profiler_mark(int type){}
 void profiler_show(struct osd_bitmap *bitmap){}
 
+/*
 struct GfxElement *builduifont(void){}
 void pick_uifont_colors(void);void displaytext(struct osd_bitmap *bitmap,const struct DisplayText *dt,int erase,int update_screen){}
 void ui_text(struct osd_bitmap *bitmap,const char *buf,int x,int y){}
@@ -42,6 +43,7 @@ void CLIB_DECL usrintf_showmessage_secs(int seconds, const char *text,...){}
 
 int uistring_init (void *language_file){}
 void uistring_shutdown (void){}
+*/
 
 void app_main_mame(uint8_t load_state)
 {
