@@ -3,6 +3,7 @@
 #include "vidhrdw/vector.h"
 #include "dirty.h"
 #include "stack_malloc.h"
+#include "gw_lcd.h"
 
 extern int  global_fps;
 extern int isIpad;
@@ -764,6 +765,45 @@ static void update_screen_dummy(struct osd_bitmap *bitmap)
 
 static void update_screen_test(struct osd_bitmap *bitmap)
 {
+	FILE *f;
+	unsigned char r, g, b;
+	int i,j;
+	f = fopen("screen.raw", "r+b");
+	for(i=0; i<bitmap->height; i++)
+	{
+		for(j=0; j<bitmap->width; j++)
+		{
+			osd_get_pen(bitmap->line[i][j], &r, &g, &b);
+			fwrite(&b, 1, 1, f);
+			fwrite(&g, 1, 1, f);
+			fwrite(&r, 1, 1, f);
+		}
+	}
+	fclose(f);
+
+}
+
+static void update_screen_gw(struct osd_bitmap *bitmap)
+{
+	unsigned char r, g, b;
+	uint16_t rr, gg, bb, rrggbb;
+	int i,j,offsetY;
+        pixel_t *framebuffer_active = lcd_get_active_buffer();
+	for(i=0; i<GW_LCD_HEIGHT; i++)
+	{
+                offsetY = i*GW_LCD_WIDTH;
+		for(j=0; j<GW_LCD_WIDTH; j++)
+		{
+			osd_get_pen(bitmap->line[i][j], &r, &g, &b);
+			bb = (b >> 3) & 0x1f;
+			gg = ((g >> 2) & 0x3f) << 5;
+			rr = ((r >> 3) & 0x1f) << 11;
+			rrggbb = (rr | gg | bb);
+                        framebuffer_active[offsetY+j]=rrggbb;
+		}
+	}
+	common_ingame_overlay();
+	lcd_swap();
 }
 
 static INLINE void pan_display(void)
@@ -900,7 +940,7 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 	}
 
 		/* copy the bitmap to screen memory */
-		update_screen = update_screen_test;
+		update_screen = update_screen_gw;
 		update_screen(bitmap);
 
 		if (have_to_clear_bitmap)
