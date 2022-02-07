@@ -47,6 +47,7 @@ int generic_vh_start(void)
 		return 1;
 	memset(dirtybuffer,1,videoram_size);
 
+	printf("generic_vh_start\n");
 	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
 	{
 		stack_free(dirtybuffer);
@@ -59,6 +60,7 @@ int generic_vh_start(void)
 
 int generic_bitmapped_vh_start(void)
 {
+	printf("generic_bitmapped_vh_start\n");
 	if ((tmpbitmap = bitmap_alloc(Machine->drv->screen_width,Machine->drv->screen_height)) == 0)
 	{
 		return 1;

@@ -819,6 +819,7 @@ logerror("Machine reset\n");
 
 			/* make sure any bank switching is reset */
 			SET_OP_BASE(activecpu, GETPC(activecpu));
+			//printf("PC: %04x\n", GETPC(activecpu));
 
 			/* run for the requested number of cycles */
 			profiler_mark(PROFILER_CPU1 + cpunum);

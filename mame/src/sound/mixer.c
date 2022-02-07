@@ -73,7 +73,9 @@ static UINT16 is_stereo;
 
 /* 32-bit accumulators */
 static UINT32 accum_base;
-static INT32 left_accum[ACCUMULATOR_SAMPLES];
+//static INT32 left_accum[ACCUMULATOR_SAMPLES];
+//static INT32 right_accum[ACCUMULATOR_SAMPLES];
+static INT32 *left_accum;
 static INT32 *right_accum;
 
 /* 16-bit mix buffers */
@@ -121,7 +123,7 @@ int mixer_sh_start(void)
 
 	/* clear the accumulators */
 	accum_base = 0;
-	memset(left_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
+	//memset(left_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
 	//memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
 
 	samples_this_frame = osd_start_audio_stream(is_stereo);

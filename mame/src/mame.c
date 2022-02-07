@@ -419,17 +419,41 @@ static int vh_open(void)
 				}
 			}
 
-			if ((Machine->gfx[i] = decodegfx(memory_region(drv->gfxdecodeinfo[i].memory_region)
-					+ drv->gfxdecodeinfo[i].start,
-					&glcopy)) == 0)
+			if (0) // generate gfxdata from memory region
 			{
-				vh_close();
+				if ((Machine->gfx[i] = decodegfx(memory_region(drv->gfxdecodeinfo[i].memory_region)
+						+ drv->gfxdecodeinfo[i].start,
+						&glcopy)) == 0)
+				{
+					vh_close();
 
-				bailing = 1;
-				printf("Out of memory decoding gfx\n");
+					bailing = 1;
+					printf("Out of memory decoding gfx\n");
 
-				return 1;
+					return 1;
+				}
+				FILE *fp;
+				char fname[12];
+                        	sprintf(fname, "gfxdata.%03d", i);
+				fp = fopen(fname, "wb");
+				fwrite(Machine->gfx[i]->gfxdata, glcopy.height*glcopy.width*glcopy.total, 1, fp);
+				fclose(fp);
 			}
+			else // read gfxdata from file
+			{
+				char fname[12];
+                        	sprintf(fname, "gfxdata.%03d", i);
+				if ((Machine->gfx[i] = decodegfx_fromfile(fname, &glcopy)) == 0)
+				{
+					vh_close();
+
+					bailing = 1;
+					printf("Failed to read gfx from file\n");
+
+					return 1;
+				}
+			}
+
 			if (Machine->remapped_colortable)
 				Machine->gfx[i]->colortable = &Machine->remapped_colortable[drv->gfxdecodeinfo[i].color_codes_start];
 			Machine->gfx[i]->total_colors = drv->gfxdecodeinfo[i].total_color_codes;
@@ -443,6 +467,7 @@ static int vh_open(void)
 	if (Machine->drv->video_attributes & VIDEO_TYPE_VECTOR)
 		scale_vectorgames(options.vector_width,options.vector_height,&width,&height);
 
+	printf("scrbitmap\n");
 	Machine->scrbitmap = bitmap_alloc_depth(width,height,Machine->color_depth);
 	if (!Machine->scrbitmap)
 	{
@@ -544,9 +569,9 @@ int updatescreen(void)
 	/* the user interface must be called between vh_update() and osd_update_video_and_audio(), */
 	/* to allow it to overlay things on the game display. We must call it even */
 	/* if the frame is skipped, to keep a consistent timing. */
-	if (handle_user_interface(real_scrbitmap))
-		/* quit if the user asked to */
-		return 1;
+	//if (handle_user_interface(real_scrbitmap))
+	//	/* quit if the user asked to */
+	//	return 1;
 
 	update_video_and_audio();
 
@@ -568,10 +593,10 @@ void draw_screen(int _bitmap_dirty)
 
 	(*Machine->drv->vh_update)(Machine->scrbitmap,_bitmap_dirty);  /* update screen */
 
-	if (artwork_overlay)
-	{
-		overlay_draw(overlay_real_scrbitmap, Machine->scrbitmap);
-	}
+	//if (artwork_overlay)
+	//{
+	//	overlay_draw(overlay_real_scrbitmap, Machine->scrbitmap);
+	//}
 }
 
 
@@ -648,7 +673,7 @@ int run_machine(void)
 					osd_led_w(2,0);
 					osd_led_w(3,0);
 
-					init_user_interface();
+					//init_user_interface();
 
 					/* disable cheat if no roms */
 					if (!gamedrv->rom) options.cheat = 0;

@@ -78,6 +78,21 @@ int readroms(void)
 		unsigned int region_size;
 		const char *name;
 
+		if (1) // ignore gfx regions
+		{
+			if ((romp->crc & ~REGIONFLAG_MASK) == REGION_GFX1)
+			{
+				Machine->memory_region_type[region] = romp->crc;
+				region++;
+
+				romp++;
+				while (romp->name || romp->length)
+					romp++;
+
+				continue;
+			}
+		}
+
 		/* Mish:  An 'optional' rom region, only loaded if sound emulation is turned on */
 		if (Machine->sample_rate==0 && (romp->crc & REGIONFLAG_SOUNDONLY)) {
 			logerror("readroms():  Ignoring rom region %d\n",region);
@@ -105,6 +120,7 @@ int readroms(void)
 		}
 		Machine->memory_region_length[region] = region_size;
 		Machine->memory_region_type[region] = romp->crc;
+		printf("ROM: %s %d %d %d\n", romp->name, romp->crc & ~REGIONFLAG_MASK, REGION_CPU1, REGION_GFX1);
 
 		/* some games (i.e. Pleiades) want the memory clear on startup */
 		if (region_size <= 0x400000)	/* don't clear large regions which will be filled anyway */
@@ -922,7 +938,6 @@ struct osd_bitmap *bitmap_alloc_depth(int width,int height,int depth)
 
 		temp = width; width = height; height = temp;
 	}
-
 	return osd_alloc_bitmap(width,height,depth);
 }
 

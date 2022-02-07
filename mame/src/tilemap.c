@@ -53,11 +53,13 @@ UINT32 tilemap_scan_cols( UINT32 col, UINT32 row, UINT32 num_cols, UINT32 num_ro
 /*********************************************************************************/
 
 static struct osd_bitmap *create_tmpbitmap( int width, int height, int depth ){
+	printf("create_tmpbitmap\n");
 	return osd_alloc_bitmap( width,height,depth );
 }
 
 static struct osd_bitmap *create_bitmask( int width, int height ){
 	width = (width+7)>>3; /* 8 bits per byte */
+	printf("create_bitmask\n");
 	return osd_alloc_bitmap( width,height, 8 );
 }
 
@@ -390,6 +392,7 @@ int tilemap_init( void ){
 	screen_width = Machine->scrbitmap->width;
 	screen_height = Machine->scrbitmap->height;
 	first_tilemap = 0;
+	printf("tilemap_init\n");
 	priority_bitmap = create_tmpbitmap( screen_width, screen_height, 8 );
 	if( priority_bitmap ){
 		priority_bitmap_line_offset = priority_bitmap->line[1] - priority_bitmap->line[0];
@@ -449,6 +452,7 @@ struct tilemap *tilemap_create(
 		tilemap->rowscroll = (int*)stack_calloc(tilemap->cached_height,sizeof(int));
 		tilemap->colscroll = (int*)stack_calloc(tilemap->cached_width,sizeof(int));
 		tilemap->priority_row = (UINT8**)stack_malloc( sizeof(UINT8 *)*num_rows );
+		printf("tilemap_create\n");
 		tilemap->pixmap = create_tmpbitmap( tilemap->cached_width, tilemap->cached_height, Machine->scrbitmap->depth );
 		tilemap->foreground = mask_create( tilemap );
 		tilemap->background = (type & TILEMAP_SPLIT)?mask_create( tilemap ):NULL;
