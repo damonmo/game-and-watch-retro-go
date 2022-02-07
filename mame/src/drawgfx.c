@@ -147,6 +147,7 @@ struct GfxElement *decodegfx(const UINT8 *src,const struct GfxLayout *gl)
 
 	gfx->line_modulo = gfx->width;
 	gfx->char_modulo = gfx->line_modulo * gfx->height;
+	printf("%d %d %d %d\n", gl->total, gfx->char_modulo, gfx->height, gfx->width);
 	if ((gfx->gfxdata = (unsigned char *) stack_malloc(gl->total * gfx->char_modulo * sizeof(UINT8))) == 0)
 	{
 		stack_free(gfx);
@@ -166,6 +167,47 @@ struct GfxElement *decodegfx(const UINT8 *src,const struct GfxLayout *gl)
 
 	return gfx;
 }
+
+struct GfxElement *decodegfx_fromfile(const char *fname,const struct GfxLayout *gl)
+{
+	int c;
+	struct GfxElement *gfx;
+
+
+	if ((gfx = stack_malloc(sizeof(struct GfxElement))) == 0)
+		return 0;
+	memset(gfx,0,sizeof(struct GfxElement));
+
+	if (Machine->orientation & ORIENTATION_SWAP_XY)
+	{
+		gfx->width = gl->height;
+		gfx->height = gl->width;
+	}
+	else
+	{
+		gfx->width = gl->width;
+		gfx->height = gl->height;
+	}
+
+	gfx->line_modulo = gfx->width;
+	gfx->char_modulo = gfx->line_modulo * gfx->height;
+
+	gfx->total_elements = gl->total;
+	gfx->color_granularity = 1 << gl->planes;
+
+	gfx->pen_usage = 0; /* need to make sure this is NULL if the next test fails) */
+	if (gfx->color_granularity <= 32)	/* can't handle more than 32 pens */
+		gfx->pen_usage = (unsigned int *) stack_malloc(gfx->total_elements * sizeof(int));
+		/* no need to check for failure, the code can work without pen_usage */
+
+	FILE *f;
+	f = osd_fopen("", fname, OSD_FILETYPE_ROM,0);
+	gfx->gfxdata = (unsigned char *)osd_fdata(f);
+	osd_fclose(f);
+
+	return gfx;
+}
+
 
 
 void freegfx(struct GfxElement *gfx)
@@ -482,12 +524,10 @@ static INLINE void common_drawgfx(struct osd_bitmap *dest,const struct GfxElemen
 
 	if (!gfx)
 	{
-		usrintf_showmessage("drawgfx() gfx == 0");
 		return;
 	}
 	if (!gfx->colortable && !is_raw[transparency])
 	{
-		usrintf_showmessage("drawgfx() gfx->colortable == 0");
 		return;
 	}
 
@@ -995,7 +1035,6 @@ void copyrozbitmap(struct osd_bitmap *dest,struct osd_bitmap *src,
 
 	if (transparency != TRANSPARENCY_PEN)
 	{
-		usrintf_showmessage("copyrozbitmap unsupported trans %02x",transparency);
 		return;
 	}
 
@@ -1124,7 +1163,6 @@ static INLINE void common_drawgfxzoom( struct osd_bitmap *dest_bmp,const struct 
 			&& transparency != TRANSPARENCY_PENS && transparency != TRANSPARENCY_COLOR
 			&& transparency != TRANSPARENCY_PEN_TABLE && transparency != TRANSPARENCY_PEN_TABLE_RAW)
 	{
-		usrintf_showmessage("drawgfxzoom unsupported trans %02x",transparency);
 		return;
 	}
 
@@ -4135,7 +4173,7 @@ DECLARE(drawgfx_core,(
 
 			case TRANSPARENCY_THROUGH:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_THROUGH not supported");
+					;
 //					BLOCKMOVE(8toN_transthrough,flipx,(sd,sw,sh,sm,dd,dm,paldata,transparent_color));
 				else
 					BLOCKMOVE(8toN_transthrough,flipx,(sd,sw,sh,sm,dd,dm,paldata,transparent_color));
@@ -4143,7 +4181,7 @@ usrintf_showmessage("pdrawgfx TRANS_THROUGH not supported");
 
 			case TRANSPARENCY_PEN_TABLE:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_PEN_TABLE not supported");
+					;
 //					BLOCKMOVE(8toN_pen_table_pri,flipx,(sd,sw,sh,sm,dd,dm,paldata,transparent_color));
 				else
 					BLOCKMOVE(8toN_pen_table,flipx,(sd,sw,sh,sm,dd,dm,paldata,transparent_color));
@@ -4151,7 +4189,7 @@ usrintf_showmessage("pdrawgfx TRANS_PEN_TABLE not supported");
 
 			case TRANSPARENCY_PEN_TABLE_RAW:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_PEN_TABLE_RAW not supported");
+					;
 //					BLOCKMOVE(8toN_pen_table_pri_raw,flipx,(sd,sw,sh,sm,dd,dm,color,transparent_color));
 				else
 					BLOCKMOVE(8toN_pen_table_raw,flipx,(sd,sw,sh,sm,dd,dm,color,transparent_color));
@@ -4159,7 +4197,7 @@ usrintf_showmessage("pdrawgfx TRANS_PEN_TABLE_RAW not supported");
 
 			case TRANSPARENCY_NONE_RAW:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_NONE_RAW not supported");
+					;
 //					BLOCKMOVE(8toN_opaque_pri_raw,flipx,(sd,sw,sh,sm,dd,dm,paldata,pribuf,pri_mask));
 				else
 					BLOCKMOVE(8toN_opaque_raw,flipx,(sd,sw,sh,sm,dd,dm,color));
@@ -4167,7 +4205,7 @@ usrintf_showmessage("pdrawgfx TRANS_NONE_RAW not supported");
 
 			case TRANSPARENCY_PEN_RAW:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_PEN_RAW not supported");
+					;
 //					BLOCKMOVE(8toN_transpen_pri_raw,flipx,(sd,sw,sh,sm,dd,dm,paldata,pribuf,pri_mask));
 				else
 					BLOCKMOVE(8toN_transpen_raw,flipx,(sd,sw,sh,sm,dd,dm,color,transparent_color));
@@ -4175,7 +4213,7 @@ usrintf_showmessage("pdrawgfx TRANS_PEN_RAW not supported");
 
 			case TRANSPARENCY_PENS_RAW:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_PENS_RAW not supported");
+					;
 //					BLOCKMOVE(8toN_transmask_pri_raw,flipx,(sd,sw,sh,sm,dd,dm,paldata,pribuf,pri_mask));
 				else
 					BLOCKMOVE(8toN_transmask_raw,flipx,(sd,sw,sh,sm,dd,dm,color,transparent_color));
@@ -4183,17 +4221,13 @@ usrintf_showmessage("pdrawgfx TRANS_PENS_RAW not supported");
 
 			case TRANSPARENCY_THROUGH_RAW:
 				if (pribuf)
-usrintf_showmessage("pdrawgfx TRANS_PEN_RAW not supported");
+					;
 //					BLOCKMOVE(8toN_transpen_pri_raw,flipx,(sd,sw,sh,sm,dd,dm,paldata,pribuf,pri_mask));
 				else
 					BLOCKMOVE(8toN_transthrough_raw,flipx,(sd,sw,sh,sm,dd,dm,color,transparent_color));
 				break;
 
 			default:
-				if (pribuf)
-					usrintf_showmessage("pdrawgfx pen mode not supported");
-				else
-					usrintf_showmessage("drawgfx pen mode not supported");
 				break;
 		}
 	}
@@ -4282,7 +4316,6 @@ DECLARE(copybitmap_core,(
 				break;
 
 			default:
-				usrintf_showmessage("copybitmap pen mode not supported");
 				break;
 		}
 	}

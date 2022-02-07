@@ -120,6 +120,7 @@ extern plot_box_proc plot_box;
 
 void decodechar(struct GfxElement *gfx,int num,const unsigned char *src,const struct GfxLayout *gl);
 struct GfxElement *decodegfx(const unsigned char *src,const struct GfxLayout *gl);
+struct GfxElement *decodegfx_fromfile(const char *fname,const struct GfxLayout *gl);
 void set_pixel_functions(void);
 void freegfx(struct GfxElement *gfx);
 void drawgfx(struct osd_bitmap *dest,const struct GfxElement *gfx,
