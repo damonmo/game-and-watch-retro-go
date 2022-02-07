@@ -297,9 +297,9 @@ void parse_cmdline (int argc, char **argv, int game_index)
 	options.cheat      = get_bool ("config", "cheat", NULL, 0);
 	options.mame_debug = get_bool ("config", "debug", NULL, 0);
 
- 	history_filename  = get_string ("config", "historyfile", NULL, "history.dat");    /* JCK 980917 */
+ 	//history_filename  = get_string ("config", "historyfile", NULL, "history.dat");    /* JCK 980917 */
 
-	mameinfo_filename  = get_string ("config", "mameinfofile", NULL, "mameinfo.dat");    /* JCK 980917 */
+	//mameinfo_filename  = get_string ("config", "mameinfofile", NULL, "mameinfo.dat");    /* JCK 980917 */
 
 	/* get resolution */
 	resolution  = get_string ("config", "resolution", NULL, "auto");
