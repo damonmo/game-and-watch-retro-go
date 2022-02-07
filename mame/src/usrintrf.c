@@ -2529,108 +2529,6 @@ static void display_scroll_message (struct osd_bitmap *bitmap, int *scroll, int 
 }
 
 
-/* Display text entry for current driver from history.dat and mameinfo.dat. */
-static int displayhistory (struct osd_bitmap *bitmap, int selected)
-{
-	static int scroll = 0;
-	static char *buf = 0;
-	int maxcols,maxrows;
-	int sel;
-
-
-	sel = selected - 1;
-
-
-	maxcols = (Machine->uiwidth / Machine->uifontwidth) - 1;
-	maxrows = (2 * Machine->uiheight - Machine->uifontheight) / (3 * Machine->uifontheight);
-	maxcols -= 2;
-	maxrows -= 8;
-
-	if (!buf)
-	{
-		/* allocate a buffer for the text */
-		buf = (char*) stack_malloc(8192);
-		if (buf)
-		{
-			/* try to load entry */
-			if (load_driver_history (Machine->gamedrv, buf, 8192) == 0)
-			{
-				scroll = 0;
-				wordwrap_text_buffer (buf, maxcols);
-				strcat(buf,"\n\t");
-				strcat(buf,ui_getstring (UI_lefthilight));
-				strcat(buf," ");
-				strcat(buf,ui_getstring (UI_returntomain));
-				strcat(buf," ");
-				strcat(buf,ui_getstring (UI_righthilight));
-				strcat(buf,"\n");
-			}
-			else
-			{
-				stack_free(buf);
-				buf = 0;
-			}
-		}
-	}
-
-	{
-		if (buf)
-			display_scroll_message (bitmap, &scroll, maxcols, maxrows, buf);
-		else
-		{
-			char msg[80];
-
-			strcpy(msg,"\t");
-			strcat(msg,ui_getstring(UI_historymissing));
-			strcat(msg,"\n\n\t");
-			strcat(msg,ui_getstring (UI_lefthilight));
-			strcat(msg," ");
-			strcat(msg,ui_getstring (UI_returntomain));
-			strcat(msg," ");
-			strcat(msg,ui_getstring (UI_righthilight));
-			ui_displaymessagewindow(bitmap,msg);
-		}
-
-		if ((scroll > 0) && input_ui_pressed_repeat(IPT_UI_UP,4))
-		{
-			if (scroll == 2) scroll = 0;	/* 1 would be the same as 0, but with arrow on top */
-			else scroll--;
-		}
-
-		if (input_ui_pressed_repeat(IPT_UI_DOWN,4))
-		{
-			if (scroll == 0) scroll = 2;	/* 1 would be the same as 0, but with arrow on top */
-			else scroll++;
-		}
-
-		if (input_ui_pressed(IPT_UI_SELECT))
-			sel = -1;
-
-		if (input_ui_pressed(IPT_UI_CANCEL))
-			sel = -1;
-
-		if (input_ui_pressed(IPT_UI_CONFIGURE))
-			sel = -2;
-	}
-
-	if (sel == -1 || sel == -2)
-	{
-		/* tell updatescreen() to clean after us */
-		need_to_clear_bitmap = 1;
-
-		/* force buffer to be recreated */
-		if (buf)
-		{
-			stack_free(buf);
-			buf = 0;
-		}
-	}
-
-	return sel + 1;
-
-}
-
-
 #ifndef MESS
 #ifdef NEOMAME
 int memcard_menu(struct osd_bitmap *bitmap, int selection)
@@ -2901,9 +2799,6 @@ static int setup_menu(struct osd_bitmap *bitmap, int selected)
 				res = tapecontrol(bitmap, sel >> SEL_BITS);
 				break;
 #endif
-			case UI_HISTORY:
-				res = displayhistory(bitmap, sel >> SEL_BITS);
-				break;
 			case UI_CHEAT:
 				res = cheat_menu(bitmap, sel >> SEL_BITS);
 				break;
