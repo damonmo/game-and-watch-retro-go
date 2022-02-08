@@ -3,6 +3,10 @@
 #include <string.h>
 #include "stack_malloc.h"
 
+#define ALIGNMENT 8
+#define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
+#define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
+
 unsigned int STACK_MALLOC_INDEX;
 unsigned char STACK_MALLOC_BUFFER[475 * 1024];
 
@@ -15,6 +19,7 @@ void stack_malloc_init(void)
 void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_function)
 {
     void *addr;
+    sz = ALIGN(sz + SIZE_T_SIZE);
     if(sizeof STACK_MALLOC_BUFFER - STACK_MALLOC_INDEX < sz)
         return NULL;
     addr = &STACK_MALLOC_BUFFER[STACK_MALLOC_INDEX];
