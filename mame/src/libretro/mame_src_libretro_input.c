@@ -142,45 +142,22 @@ int key[KEY_MAX] = {0};
 
 static void updatekeyboard(void)
 {	
+    odroid_gamepad_state_t joystick;
+    odroid_input_read_gamepad(&joystick);
 
-	//key[KEY_O]=ExKey1 & GP2X_LEFT;
-	//key[KEY_K]=ExKey1 & GP2X_RIGHT;
+    odroid_dialog_choice_t options[] = {
+        ODROID_DIALOG_CHOICE_LAST
+    };
+    common_emu_input_loop(&joystick, options);
 
-	//key[KEY_1]=((ExKey1 & GP2X_START) && (!(ExKey1 & GP2X_SELECT)));
-	//key[KEY_2]=((ExKey2 & GP2X_START) && (!(ExKey2 & GP2X_SELECT)));
-	//key[KEY_3]=((ExKey3 & GP2X_START) && (!(ExKey3 & GP2X_SELECT)));
-	//key[KEY_4]=((ExKey4 & GP2X_START) && (!(ExKey4 & GP2X_SELECT)));
-	//key[KEY_5]=((!(ExKey1 & GP2X_START)) && (ExKey1 & GP2X_SELECT));
-	//key[KEY_6]=((!(ExKey2 & GP2X_START)) && (ExKey2 & GP2X_SELECT));
-	//key[KEY_7]=((!(ExKey3 & GP2X_START)) && (ExKey3 & GP2X_SELECT));
-	//key[KEY_8]=((!(ExKey4 & GP2X_START)) && (ExKey4 & GP2X_SELECT));
-
-	/* Start A == Start Button */
-	key[KEY_1]=( (ExKey1 & GP2X_START) && !(ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) );
-	/* Start B == Joystick UP + Start Button */
-	key[KEY_2]=( ( (ExKey1 & GP2X_START) && !(ExKey1 & GP2X_SELECT) && (ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) ) || (ExKey2 & GP2X_START));
-	/* Start C == Joystick RIGHT + Start Button */
-	key[KEY_3]=( ( (ExKey1 & GP2X_START) && !(ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && (ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) ) || (ExKey3 & GP2X_START));
-	/* Start D == Joystick DOWN + Start Button */
-	key[KEY_4]=( ( (ExKey1 & GP2X_START) && !(ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && (ExKey1 & GP2X_DOWN) ) || (ExKey4 & GP2X_START));
-	/* Coin A == Select Button */
-	key[KEY_5]=( !(ExKey1 & GP2X_START) && (ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) );
-	/* Coin B == Select Button + Joystick UP */	
-	key[KEY_6]=( ( !(ExKey1 & GP2X_START) && (ExKey1 & GP2X_SELECT) && (ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) ) || (ExKey2 & GP2X_SELECT));
-	/* Coin C == Select Button + Joystick RIGHT */
-	key[KEY_7]=( ( !(ExKey1 & GP2X_START) && (ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && (ExKey1 & GP2X_RIGHT) && !(ExKey1 & GP2X_DOWN) ) || (ExKey3 & GP2X_SELECT));
-	/* Coin D == Select Button + Joystick DOWN */
-	key[KEY_8]=( ( !(ExKey1 & GP2X_START) && (ExKey1 & GP2X_SELECT) && !(ExKey1 & GP2X_UP) && !(ExKey1 & GP2X_RIGHT) && (ExKey1 & GP2X_DOWN) ) || (ExKey4 & GP2X_SELECT));
-
-	key[KEY_TAB]=(ExKey1 & GP2X_START) && (ExKey1 & GP2X_SELECT);
-	key[KEY_ENTER]=(ExKey1 & GP2X_B);
-
-	key[KEY_ESC]=((ExKey1 & GP2X_L) && (ExKey1 & GP2X_R) && (ExKey1 & GP2X_START));
-
-//sq Disable multiple key press combinations. Causes issues with iCade. Hangover from GP2X port.
-//sq	key[KEY_P]=((ExKey1 & GP2X_L) && (ExKey1 & GP2X_R) && (!(ExKey1 & GP2X_START)));
-//sq    key[KEY_F11]=(((ExKey1 & GP2X_L) && (ExKey1 & GP2X_START)) || ((ExKey1 & GP2X_R) && (ExKey1 & GP2X_SELECT)));
-//sq    key[KEY_LSHIFT]=((ExKey1 & GP2X_L) && (ExKey1 & GP2X_START));
+    key[KEY_5] = joystick.values[ODROID_INPUT_SELECT];
+    key[KEY_1] = joystick.values[ODROID_INPUT_START];
+    key[KEY_LEFT] = joystick.values[ODROID_INPUT_LEFT];
+    key[KEY_RIGHT] = joystick.values[ODROID_INPUT_RIGHT];
+    key[KEY_UP] = joystick.values[ODROID_INPUT_UP];
+    key[KEY_DOWN] = joystick.values[ODROID_INPUT_DOWN];
+    key[KEY_LCONTROL] = joystick.values[ODROID_INPUT_A];
+    key[KEY_ALT] = joystick.values[ODROID_INPUT_B];
 }
 
 int osd_is_key_pressed(int keycode)
@@ -223,30 +200,7 @@ int osd_is_key_pressed(int keycode)
         //printf("osd_is_key_pressed %d\n", keycode);
 	return key[keycode];
 */
-    odroid_gamepad_state_t joystick;
-    odroid_input_read_gamepad(&joystick);
-
-    odroid_dialog_choice_t options[] = {
-        ODROID_DIALOG_CHOICE_LAST
-    };
-    common_emu_input_loop(&joystick, options);
-
-    if (keycode == KEY_5)
-        return joystick.values[ODROID_INPUT_SELECT];
-    else if (keycode == KEY_1)
-        return joystick.values[ODROID_INPUT_START];
-    else if (keycode == KEY_LEFT)
-        return joystick.values[ODROID_INPUT_LEFT];
-    else if (keycode == KEY_RIGHT)
-        return joystick.values[ODROID_INPUT_RIGHT];
-    else if (keycode == KEY_UP)
-        return joystick.values[ODROID_INPUT_UP];
-    else if (keycode == KEY_DOWN)
-        return joystick.values[ODROID_INPUT_DOWN];
-    else if (keycode == KEY_LCONTROL)
-        return joystick.values[ODROID_INPUT_A];
-    else if (keycode == KEY_ALT)
-        return joystick.values[ODROID_INPUT_A];
+    return key[keycode];
 }
 
 
@@ -495,7 +449,7 @@ void osd_poll_joysticks(void)
 {
 	//sched_yield();//???
 
-	//updatekeyboard();
+	updatekeyboard();
 
 	//if (joystick > JOY_TYPE_NONE)
 		//poll_joystick();

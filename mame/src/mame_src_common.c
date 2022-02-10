@@ -120,7 +120,7 @@ int readroms(void)
 		}
 		Machine->memory_region_length[region] = region_size;
 		Machine->memory_region_type[region] = romp->crc;
-		printf("ROM: %s %d %d %d\n", romp->name, romp->crc & ~REGIONFLAG_MASK, REGION_CPU1, REGION_GFX1);
+		//printf("ROM: %s %d %d %d\n", romp->name, romp->crc & ~REGIONFLAG_MASK, REGION_CPU1, REGION_GFX1);
 
 		/* some games (i.e. Pleiades) want the memory clear on startup */
 		if (region_size <= 0x400000)	/* don't clear large regions which will be filled anyway */
