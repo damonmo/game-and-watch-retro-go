@@ -1,5 +1,7 @@
 #include "allegro.h"
 #include "driver.h"
+#include "gw_buttons.h"
+#include "common.h"
 
 int use_mouse;
 int joystick;
@@ -183,6 +185,21 @@ static void updatekeyboard(void)
 
 int osd_is_key_pressed(int keycode)
 {
+	/*
+	static int pressed=0;
+	if (keycode == KEY_5)
+	{
+		if (pressed == 0)
+		{
+			pressed = 1;
+			return 1;
+		}
+		else
+		{
+			pressed = 0;
+			return 0;
+		}
+	}
 	if (keycode >= KEY_MAX) return 0;
 
 	if (keycode == KEY_PAUSE)
@@ -203,8 +220,33 @@ int osd_is_key_pressed(int keycode)
 
 		return res;
 	}
-
+        //printf("osd_is_key_pressed %d\n", keycode);
 	return key[keycode];
+*/
+    odroid_gamepad_state_t joystick;
+    odroid_input_read_gamepad(&joystick);
+
+    odroid_dialog_choice_t options[] = {
+        ODROID_DIALOG_CHOICE_LAST
+    };
+    common_emu_input_loop(&joystick, options);
+
+    if (keycode == KEY_5)
+        return joystick.values[ODROID_INPUT_SELECT];
+    else if (keycode == KEY_1)
+        return joystick.values[ODROID_INPUT_START];
+    else if (keycode == KEY_LEFT)
+        return joystick.values[ODROID_INPUT_LEFT];
+    else if (keycode == KEY_RIGHT)
+        return joystick.values[ODROID_INPUT_RIGHT];
+    else if (keycode == KEY_UP)
+        return joystick.values[ODROID_INPUT_UP];
+    else if (keycode == KEY_DOWN)
+        return joystick.values[ODROID_INPUT_DOWN];
+    else if (keycode == KEY_LCONTROL)
+        return joystick.values[ODROID_INPUT_A];
+    else if (keycode == KEY_ALT)
+        return joystick.values[ODROID_INPUT_A];
 }
 
 
@@ -621,18 +663,9 @@ void msdos_init_input (void)
 	{
 		key[i]=0;
 	}	
-
-	if (joystick == JOY_TYPE_NONE)
-		logerror("Joystick not found\n");
-	else
-		logerror("Installed %s %s\n","Joystick", "GP2X");
-
+	joystick = 0;
 	init_joy_list();
-
-	if (use_mouse)
-		use_mouse = 1;
-	else
-		use_mouse = 0;
+	use_mouse = 0;
 }
 
 
