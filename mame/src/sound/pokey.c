@@ -1167,9 +1167,13 @@ void pokey_register_w(int chip, int offs, int data)
          * loaders from Ballblazer and Escape from Fractalus
          * The real times are unknown
          */
+	/* gw: disable timers
         timer_set(TIME_IN_USEC(200), chip, pokey_serout_ready);
+	*/
         /* 10 bits (assumption 1 start, 8 data and 1 stop bit) take how long? */
+	/* gw: disable timers
         timer_set(TIME_IN_USEC(2000), chip, pokey_serout_complete);
+	*/
         break;
 
     case IRQEN_C:
