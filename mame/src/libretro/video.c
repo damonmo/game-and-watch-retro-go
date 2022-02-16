@@ -859,6 +859,18 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 	int i;
 	int have_to_clear_bitmap = 0;
 
+	/* throttle */
+	const uint32_t deltatime = (1000.0 / 60.0);
+	static uint32_t nexttime=0;
+	if (nexttime == 0)
+	{
+	        nexttime = HAL_GetTick();
+	}
+	while (HAL_GetTick() < nexttime)
+	{
+		__WFI();
+	}
+	nexttime = nexttime + deltatime;
 
 	/* update audio */
 	//msdos_update_audio();
