@@ -828,9 +828,6 @@ int pokey_register_r(int chip, int offs)
 	struct POKEYregisters *p = &pokey[chip];
     int data = 0, pot;
 
-    /* gw: disable reads */
-    return data;
-
     switch (offs & 15)
 	{
 	case POT0_C: case POT1_C: case POT2_C: case POT3_C:
@@ -891,12 +888,14 @@ int pokey_register_r(int chip, int offs)
 			p->r17 = (p->r17 + adjust) % 0x1ffff;
 			if( p->AUDCTL & POLY9 )
 			{
-				p->RANDOM = rand9[p->r9];
+				//p->RANDOM = rand9[p->r9];
+				p->RANDOM = 0;
 				LOG_RAND(("POKEY #%d adjust %u rand9[$%05x]: $%02x\n", chip, adjust, p->r9, p->RANDOM));
 			}
             else
 			{
-				p->RANDOM = rand17[p->r17];
+				//p->RANDOM = rand17[p->r17];
+				p->RANDOM = 0;
 				LOG_RAND(("POKEY #%d adjust %u rand17[$%05x]: $%02x\n", chip, adjust, p->r17, p->RANDOM));
 			}
 		}
