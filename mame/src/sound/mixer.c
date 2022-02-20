@@ -8,6 +8,7 @@
 
 #include "driver.h"
 #include <math.h>
+#include "stack_malloc.h"
 
 #ifdef MAME_FASTSOUND
 #include "mixer_scale.h"
@@ -73,11 +74,14 @@ static UINT16 is_stereo;
 
 /* 32-bit accumulators */
 static UINT32 accum_base;
-static INT32 left_accum[ACCUMULATOR_SAMPLES];
-static INT32 right_accum[ACCUMULATOR_SAMPLES];
+//static INT32 left_accum[ACCUMULATOR_SAMPLES];
+//static INT32 right_accum[ACCUMULATOR_SAMPLES];
+static INT32 *left_accum;
+static INT32 *right_accum;
 
 /* 16-bit mix buffers */
-static INT16 mix_buffer[ACCUMULATOR_SAMPLES*2];	/* *2 for stereo */
+//static INT16 mix_buffer[ACCUMULATOR_SAMPLES*2];	/* *2 for stereo */
+static INT16 *mix_buffer;	/* *2 for stereo */
 
 /* global sample tracking */
 static UINT32 samples_this_frame;
@@ -116,12 +120,27 @@ int mixer_sh_start(void)
 		extern int usestereo;
 		is_stereo = (((Machine->drv->sound_attributes & SOUND_SUPPORTS_STEREO) != 0) && (usestereo!=0));
 	}
+	printf("is_stereo: %d\n", is_stereo);
+
+	/* initialize mix_buffer */
+	if (is_stereo)
+	{
+		mix_buffer = (INT16*)ahb_malloc(ACCUMULATOR_SAMPLES * 2 * sizeof(INT16));
+	}
+	else
+	{
+		mix_buffer = (INT16*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT16));
+	}
 
 	/* clear the accumulators */
 	accum_base = 0;
+	left_accum = (INT32*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
 	memset(left_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
-	memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
-
+	if (is_stereo)
+	{
+		right_accum = (INT32*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
+		memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
+	}
 	samples_this_frame = osd_start_audio_stream(is_stereo);
 
 	mixer_sound_enabled = 1;
