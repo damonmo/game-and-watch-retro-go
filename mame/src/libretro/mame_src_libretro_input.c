@@ -248,7 +248,7 @@ int osd_readkey_unicode(int flush)
 #define MOUSE_BUTTON(button) JOYCODE(1,0,button,1)
 
 
-#define MAX_JOY 256
+#define MAX_JOY 1
 #define MAX_JOY_NAME_LEN 40
 
 static struct JoystickInfo joylist[MAX_JOY] =
