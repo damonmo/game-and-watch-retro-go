@@ -9,6 +9,8 @@
 
 unsigned int STACK_MALLOC_INDEX;
 unsigned char STACK_MALLOC_BUFFER[475 * 1024];
+unsigned int AHB_MALLOC_INDEX;
+unsigned char AHB_MALLOC_BUFFER[120 * 1024] __attribute__((section (".audio")));
 
 void stack_malloc_init(void)
 {
@@ -44,4 +46,27 @@ void *stack_calloc(size_t nitems, size_t sz)
 void stack_free(void *ptr)
 {
     printf("stack_free %04x\n", ptr);
+}
+
+void ahb_malloc_init(void)
+{
+    AHB_MALLOC_INDEX = 0;
+    memset(AHB_MALLOC_BUFFER, 0, sizeof(AHB_MALLOC_BUFFER));
+}
+
+void *_ahb_malloc(size_t sz, const char *caller_file, const char *caller_function)
+{
+    void *addr;
+    sz = ALIGN(sz + SIZE_T_SIZE);
+    if(sizeof AHB_MALLOC_BUFFER - AHB_MALLOC_INDEX < sz)
+        return NULL;
+    addr = &AHB_MALLOC_BUFFER[AHB_MALLOC_INDEX];
+    AHB_MALLOC_INDEX += sz;
+    printf("ahb_malloc %s %s %04x %d %d\n", caller_file, caller_function, addr, sz, AHB_MALLOC_INDEX);
+    return addr;
+}
+
+void ahb_free(void *ptr)
+{
+    printf("ahb_free %04x\n", ptr);
 }
