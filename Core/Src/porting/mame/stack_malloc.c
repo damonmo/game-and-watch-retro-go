@@ -8,7 +8,8 @@
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
 unsigned int STACK_MALLOC_INDEX;
-unsigned char STACK_MALLOC_BUFFER[475 * 1024];
+unsigned char STACK_MALLOC_BUFFER[499912];
+
 unsigned int AHB_MALLOC_INDEX;
 unsigned char AHB_MALLOC_BUFFER[120 * 1024] __attribute__((section (".audio")));
 
@@ -23,7 +24,10 @@ void *_stack_malloc(size_t sz, const char *caller_file, const char *caller_funct
     void *addr;
     sz = ALIGN(sz + SIZE_T_SIZE);
     if(sizeof STACK_MALLOC_BUFFER - STACK_MALLOC_INDEX < sz)
+    {
+	printf("stack_malloc out of memory!\n");
         return NULL;
+    }
     addr = &STACK_MALLOC_BUFFER[STACK_MALLOC_INDEX];
     STACK_MALLOC_INDEX += sz;
     printf("stack_malloc %s %s %04x %d %d\n", caller_file, caller_function, addr, sz, STACK_MALLOC_INDEX);
@@ -59,7 +63,10 @@ void *_ahb_malloc(size_t sz, const char *caller_file, const char *caller_functio
     void *addr;
     sz = ALIGN(sz + SIZE_T_SIZE);
     if(sizeof AHB_MALLOC_BUFFER - AHB_MALLOC_INDEX < sz)
+    {
+	printf("ahb_malloc out of memory!\n");
         return NULL;
+    }
     addr = &AHB_MALLOC_BUFFER[AHB_MALLOC_INDEX];
     AHB_MALLOC_INDEX += sz;
     printf("ahb_malloc %s %s %04x %d %d\n", caller_file, caller_function, addr, sz, AHB_MALLOC_INDEX);
