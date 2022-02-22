@@ -91,7 +91,8 @@ int run_game(int game)
 	      options.vector_height = 640;
         }
     }
-	Machine->sample_rate = options.samplerate;
+	//Machine->sample_rate = options.samplerate;
+	Machine->sample_rate = 44100;
 
 	/* get orientation right */
 	Machine->orientation = gamedrv->flags & ORIENTATION_MASK;

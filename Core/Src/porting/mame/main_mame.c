@@ -6,6 +6,8 @@
 
 #include "gw_lcd.h"
 #include "gw_linker.h"
+#include "common.h"
+#include "appid.h"
 
 #include "mame.h"
 
@@ -47,13 +49,14 @@ void uistring_shutdown (void){}
 
 void app_main_mame(uint8_t load_state)
 {
-    int ret;
     printf("MAME Load: %s\n", ACTIVE_FILE->name);
-    ret = run_game(0);
+    
+    // Init Sound
+    memset(audiobuffer_dma, 0, sizeof(audiobuffer_dma));
+    HAL_SAI_Transmit_DMA(&hsai_BlockA1, (uint8_t *)audiobuffer_dma, (44100/60) * 2 );
+    odroid_system_init(APPID_MAME, 44100);
+    printf("Sound initialized\n");
 
-    while (1) {
-        HAL_Delay(1000);
-        printf("Hello!\n");
-        __NOP();
-    }
+
+    run_game(0);
 }

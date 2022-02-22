@@ -81,7 +81,7 @@ static INT32 *right_accum;
 
 /* 16-bit mix buffers */
 //static INT16 mix_buffer[ACCUMULATOR_SAMPLES*2];	/* *2 for stereo */
-static INT16 *mix_buffer;	/* *2 for stereo */
+INT16 *mix_buffer;	/* *2 for stereo */
 
 /* global sample tracking */
 static UINT32 samples_this_frame;

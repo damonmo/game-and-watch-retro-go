@@ -4,6 +4,9 @@
 #include "dirty.h"
 #include "stack_malloc.h"
 #include "gw_lcd.h"
+#include "common.h"
+
+#define MAME_AUDIO_BUFFER_LENGTH  (44100 / 60)
 
 extern int  global_fps;
 extern int isIpad;
@@ -20,6 +23,8 @@ extern int retro_audio_buff_active;
 extern unsigned retro_audio_buff_occupancy;
 extern int retro_audio_buff_underrun;
 extern int should_skip_frame;
+
+extern INT16 *mix_buffer;
 
 int iOS_exitPause = 0;
 int iOS_cropVideo = 0;
@@ -853,6 +858,45 @@ int osd_skip_this_frame(void)
    return should_skip_frame;
 }
 
+static void mame_sound_submit()
+{
+
+    uint8_t volume = odroid_audio_volume_get();
+    int16_t factor = volume_tbl[volume];
+
+    /** Enables the following code to track audio rendering issues **/
+    /*
+    if (gw_audio_buffer_idx < GW_AUDIO_BUFFER_LENGTH) {
+        printf("audio underflow:%u < %u \n",gw_audio_buffer_idx , GW_AUDIO_BUFFER_LENGTH);
+        assert(0);
+    }
+
+    if (gw_audio_buffer_idx > (GW_AUDIO_BUFFER_LENGTH +12) ) {
+        printf("audio oveflow:%u < %u \n",gw_audio_buffer_idx , GW_AUDIO_BUFFER_LENGTH);
+        assert(0);
+    }
+    */
+
+    size_t offset = (dma_state == DMA_TRANSFER_STATE_HF) ? 0 : MAME_AUDIO_BUFFER_LENGTH;
+
+    if (audio_mute || volume == ODROID_AUDIO_VOLUME_MIN)
+    {
+        for (int i = 0; i < MAME_AUDIO_BUFFER_LENGTH; i++)
+        {
+            audiobuffer_dma[i + offset] = 0;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < MAME_AUDIO_BUFFER_LENGTH; i++)
+        {
+            audiobuffer_dma[i + offset] = (factor) * (mix_buffer[i] << 4);
+        }
+    }
+
+    //mame_audio_buffer_copied = true;
+}
+
 /* Update the display. */
 void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 {
@@ -860,6 +904,7 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 	int have_to_clear_bitmap = 0;
 
 	/* throttle */
+	/*
 	const uint32_t deltatime = (1000.0 / 60.0);
 	static uint32_t nexttime=0;
 	if (nexttime == 0)
@@ -871,6 +916,8 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 		__WFI();
 	}
 	nexttime = nexttime + deltatime;
+	*/
+        bool drawFrame = common_emu_frame_loop();
 
 	/* update audio */
 	//msdos_update_audio();
@@ -1008,6 +1055,22 @@ void osd_update_video_and_audio(struct osd_bitmap *bitmap)
 	}
 
    hook_video_done();
+
+        /* copy audio samples for DMA */
+        if (drawFrame) {
+            mame_sound_submit();
+        }
+
+        if(!common_emu_state.skip_frames)
+        {
+            for(uint8_t p = 0; p < common_emu_state.pause_frames + 1; p++) {
+                static dma_transfer_state_t last_dma_state = DMA_TRANSFER_STATE_HF;
+                while (dma_state == last_dma_state) {
+                    cpumon_sleep();
+                }
+                last_dma_state = dma_state;
+            }
+        }   
 }
 
 void osd_set_gamma(float _gamma)

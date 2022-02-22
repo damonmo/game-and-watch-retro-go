@@ -16,6 +16,7 @@ int osd_start_audio_stream(int stereo)
 
 	/* determine the number of samples per frame */
 	samples_per_frame = Machine->sample_rate / Machine->drv->frames_per_second;
+	printf("samples_this_frame: %d %d %d\n", samples_per_frame, Machine->sample_rate, Machine->drv->frames_per_second);
 
 	if (Machine->sample_rate == 0) return 0;
 
@@ -32,9 +33,10 @@ void osd_stop_audio_stream(void)
 
 int osd_update_audio_stream(INT16 *buffer)
 {
+	/*
 	memcpy(samples_buffer, buffer, samples_per_frame * (usestereo ? 4 : 2));
    hook_audio_done();
-
+*/
 	return samples_per_frame;
 }
 

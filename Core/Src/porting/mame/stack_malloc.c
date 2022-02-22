@@ -8,7 +8,7 @@
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
 unsigned int STACK_MALLOC_INDEX;
-unsigned char STACK_MALLOC_BUFFER[499912];
+unsigned char STACK_MALLOC_BUFFER[498912];
 
 unsigned int AHB_MALLOC_INDEX;
 unsigned char AHB_MALLOC_BUFFER[120 * 1024] __attribute__((section (".audio")));
