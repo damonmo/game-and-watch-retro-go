@@ -51,10 +51,10 @@ void app_main_mame(uint8_t load_state)
 {
     printf("MAME Load: %s\n", ACTIVE_FILE->name);
     
+    odroid_system_init(APPID_MAME, 48000);
     // Init Sound
     memset(audiobuffer_dma, 0, sizeof(audiobuffer_dma));
-    HAL_SAI_Transmit_DMA(&hsai_BlockA1, (uint8_t *)audiobuffer_dma, (44100/60) * 2 );
-    odroid_system_init(APPID_MAME, 44100);
+    HAL_SAI_Transmit_DMA(&hsai_BlockA1, (uint8_t *)audiobuffer_dma, (2 * 48000)/60 );
     printf("Sound initialized\n");
 
 
