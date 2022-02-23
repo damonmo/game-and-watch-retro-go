@@ -6,7 +6,7 @@
 #include "gw_lcd.h"
 #include "common.h"
 
-#define MAME_AUDIO_BUFFER_LENGTH  (44100 / 60)
+#define MAME_AUDIO_BUFFER_LENGTH  (48000 / 60)
 
 extern int  global_fps;
 extern int isIpad;
@@ -890,7 +890,8 @@ static void mame_sound_submit()
     {
         for (int i = 0; i < MAME_AUDIO_BUFFER_LENGTH; i++)
         {
-            audiobuffer_dma[i + offset] = (factor) * (mix_buffer[i] << 4);
+	    int32_t sample = mix_buffer[i];
+            audiobuffer_dma[i + offset] = (sample * factor) >> 8;
         }
     }
 

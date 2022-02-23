@@ -92,7 +92,7 @@ int run_game(int game)
         }
     }
 	//Machine->sample_rate = options.samplerate;
-	Machine->sample_rate = 44100;
+	Machine->sample_rate = 48000;
 
 	/* get orientation right */
 	Machine->orientation = gamedrv->flags & ORIENTATION_MASK;
