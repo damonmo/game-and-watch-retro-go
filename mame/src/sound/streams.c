@@ -196,7 +196,7 @@ int stream_init(const char *name,int default_mixing_level,
 	mixer_set_name(channel,name);
 
 	printf("stream_init\n");
-	if ((stream_buffer[channel] = (INT16*)ahb_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
+	if ((stream_buffer[channel] = (INT16*)stack_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
 	{
 		return -1;
 	}
@@ -231,7 +231,7 @@ int stream_init_multi(int channels,const char **names,const int *default_mixing_
 		mixer_set_name(channel+i,names[i]);
 
 		printf("stream_init_multi\n");
-		if ((stream_buffer[channel+i] = (INT16*)ahb_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
+		if ((stream_buffer[channel+i] = (INT16*)stack_malloc(sizeof(INT16)*BUFFER_LEN)) == 0)
 		{
 			return -1;
 		}

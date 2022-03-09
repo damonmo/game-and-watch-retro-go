@@ -1,6 +1,10 @@
 extern unsigned char STACK_MALLOC_BUFFER[];
 extern unsigned int STACK_MALLOC_INDEX;
+#ifdef USE_AHB_MALLOC
 extern unsigned char AHB_MALLOC_BUFFER[] __attribute__((section (".audio")));
+#else
+extern unsigned char *AHB_MALLOC_BUFFER;
+#endif
 extern unsigned int AHB_MALLOC_INDEX;
 
 void stack_malloc_init(void);

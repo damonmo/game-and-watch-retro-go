@@ -138,11 +138,11 @@ int mixer_sh_start(void)
 
 	/* clear the accumulators */
 	accum_base = 0;
-	left_accum = (INT32*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
+	left_accum = (INT32*)stack_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
 	memset(left_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
 	if (is_stereo)
 	{
-		right_accum = (INT32*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
+		right_accum = (INT32*)stack_malloc(ACCUMULATOR_SAMPLES * sizeof(INT32));
 		memset(right_accum, 0, ACCUMULATOR_SAMPLES * sizeof(INT32));
 	}
 	samples_this_frame = osd_start_audio_stream(is_stereo);

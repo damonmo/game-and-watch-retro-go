@@ -11,7 +11,11 @@ unsigned int STACK_MALLOC_INDEX;
 unsigned char STACK_MALLOC_BUFFER[489912];
 
 unsigned int AHB_MALLOC_INDEX;
+#ifdef USE_AHB_MALLOC
 unsigned char AHB_MALLOC_BUFFER[120 * 1024] __attribute__((section (".audio")));
+#else
+unsigned char *AHB_MALLOC_BUFFER;
+#endif
 
 void stack_malloc_init(void)
 {
