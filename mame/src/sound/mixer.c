@@ -9,6 +9,7 @@
 #include "driver.h"
 #include <math.h>
 #include "stack_malloc.h"
+#include "common.h"
 
 #ifdef MAME_FASTSOUND
 #include "mixer_scale.h"
@@ -123,6 +124,8 @@ int mixer_sh_start(void)
 	printf("is_stereo: %d\n", is_stereo);
 
 	/* initialize mix_buffer */
+	mix_buffer = (INT16*)&audiobuffer_emulator;
+	/*
 	if (is_stereo)
 	{
 		mix_buffer = (INT16*)ahb_malloc(ACCUMULATOR_SAMPLES * 2 * sizeof(INT16));
@@ -131,6 +134,7 @@ int mixer_sh_start(void)
 	{
 		mix_buffer = (INT16*)ahb_malloc(ACCUMULATOR_SAMPLES * sizeof(INT16));
 	}
+	*/
 
 	/* clear the accumulators */
 	accum_base = 0;
