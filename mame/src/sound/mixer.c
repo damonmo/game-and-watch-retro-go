@@ -20,7 +20,7 @@
 #define DISABLE_CLIPPING		0
 
 /* accumulators have ACCUMULATOR_SAMPLES samples (must be a power of 2) */
-#define ACCUMULATOR_SAMPLES		8192
+#define ACCUMULATOR_SAMPLES		1024
 #define ACCUMULATOR_MASK		(ACCUMULATOR_SAMPLES - 1)
 
 /* fractional numbers have FRACTION_BITS bits of resolution */
