@@ -594,6 +594,7 @@ int pokey_sh_start(const struct MachineSound *msound)
 	rand_init(rand9,   9, 2, 7, 0x00080);
 	//rand_init(rand17, 17, 7,10, 0x18000);
 
+	/*
 	FILE *fp;
 	fp = osd_fopen("", "pokey.p17", OSD_FILETYPE_ROM, 0);
 	poly17 = (UINT8*)osd_fdata(fp);
@@ -601,6 +602,7 @@ int pokey_sh_start(const struct MachineSound *msound)
 	fp = osd_fopen("", "pokey.r17", OSD_FILETYPE_ROM, 0);
 	rand17 = (UINT8*)osd_fdata(fp);
 	osd_fclose(fp);
+	*/
 
 	for( chip = 0; chip < intf.num; chip++ )
 	{
@@ -632,6 +634,7 @@ int pokey_sh_start(const struct MachineSound *msound)
 		p->serout_w = intf.serout_w[chip];
 		p->interrupt_cb = intf.interrupt_cb[chip];
 
+		p->AUDCTL |= POLY9;
 		sprintf(name, "Pokey #%d", chip);
 		p->channel = stream_init(name, intf.mixing_level[chip], Machine->sample_rate, chip, update[chip]);
 
